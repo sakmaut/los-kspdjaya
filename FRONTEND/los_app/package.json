@@ -1,0 +1,38 @@
+{
+  "name": "los-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@headlessui/vue": "^1.7.18",
+    "@vuelidate/core": "^2.0.3",
+    "@vuelidate/validators": "^2.0.4",
+    "@vueuse/core": "^10.7.2",
+    "axios": "^1.6.7",
+    "lodash": "^4.17.21",
+    "n_": "^4.0.1",
+    "oh-vue-icons": "^1.0.0-rc3",
+    "pinia": "^2.1.7",
+    "primevue": "^3.49.1",
+    "vue": "^3.4.21",
+    "vue-cleave-component": "^3.0.2",
+    "vue-json-excel3": "^1.0.19",
+    "vue-router": "^4.3.0",
+    "vue-toast-notification": "^3.1.2",
+    "vue3-toastify": "^0.2.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "autoprefixer": "^10.4.18",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.1.5",
+    "vite-plugin-vue-devtools": "^7.0.16"
+  }
+}
