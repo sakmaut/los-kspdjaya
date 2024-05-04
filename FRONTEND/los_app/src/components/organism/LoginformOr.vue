@@ -1,22 +1,18 @@
 <template>
-    <div class="p-2 py-10 md:p-10 min-w-full min-h-full flex flex-col justify-between">
+    <div class="p-2 md:p-10 min-w-full min-h-full flex flex-col justify-between">
         <div>
-            <div class="flex justify-between">
-                <div>
-
-                    <img class="h-10 md:hidden"
-                        src="http://8a73085df21a.sn.mynetname.net:9000/storage/public/assets/nmhregd35XcxiUk6ABtZVwIa46XS9xrdQPM9upTW.svg"
-                        alt="logo_company">
-                </div>
+            <div class="flex justify-end">
                 <DarkMode />
             </div>
         </div>
         <div>
-            <div class="text-oprc dark:text-osf-drk">
-                <p class="text-2xl font-semibold">Welcome Back!</p>
-                <span class="flex text-sm mb-6 text-pr-600 dark:text-pr-300">Enter your username or email address
-                    and
-                    password to get your account </span>
+            <div class="text-pr dark:text-osf-drk">
+                <div class="flex   dark:bg-sf-drk-100">
+                    <img class="h-16 " src="../../assets/logo.png" alt="logo_company">
+                </div>
+                <p class="text-2xl font-semibold pt-4">Selamat datang kembali!</p>
+                <span class="flex text-xs  text-pr-500 dark:text-pr-300">masukan username dan password anda untuk masuk
+                    kedalam akun</span>
             </div>
 
             <div class="gap-4 flex flex-col">

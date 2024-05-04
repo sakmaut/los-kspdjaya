@@ -24,20 +24,21 @@
 
 .container {
     padding: 20px;
-    border: 0px solid #0000ff;
+    border: 0px solid #009b4f;
     border-radius: 24px;
     background-color: rgba(0, 0, 0, 0.8);
 }
 
 .reg-light {
-    border: 4px solid #01316E;
-    border-right-color: #002049;
+    border: 4px solid #009b4f;
+    border-right-color: #009b4f;
     width: 30px;
     height: 30px;
 }
-.reg-dark{
+
+.reg-dark {
     border: 4px solid #DDEAF3;
-    border-right-color: #013577;
+    border-right-color: #009b4f;
     width: 30px;
     height: 30px;
 }
