@@ -8,11 +8,11 @@ import JsonExcel from "vue-json-excel3";
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import * as BIcons from "oh-vue-icons/icons/bi";
 import * as RIcons from "oh-vue-icons/icons/ri";
-import * as FCIcons from "oh-vue-icons/icons/fc";
+import * as HIIcons from "oh-vue-icons/icons/hi";
 const Bi = Object.values({ ...BIcons });
 const Ri = Object.values({ ...RIcons });
-const Fc = Object.values({ ...FCIcons });
-addIcons(...Bi, ...Fc, ...Ri);
+const Hi = Object.values({ ...HIIcons });
+addIcons(...Bi, ...Hi, ...Ri);
 
 import PrimeVue from "primevue/config";
 

@@ -8,17 +8,16 @@
 }
 /* Track */
 ::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-    margin:30px;
+    background: #d6ffeb;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.1);
+    background: #02e575;
     border-radius: 5px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.2);
+    background: #009b4f;
 }

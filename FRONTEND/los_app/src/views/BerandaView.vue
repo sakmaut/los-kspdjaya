@@ -42,7 +42,7 @@ const el = ref(null);
 import { useMediaQuery } from "@vueuse/core";
 const sidebarVisible = ref(useMediaQuery('(min-width:1024px)'));
 const rect = reactive(useElementBounding(el));
-if (!localStorage.getItem("token")) {
+if (localStorage.getItem("token")) {
     router.replace("/");
 }
 const showHideLeft = () => {

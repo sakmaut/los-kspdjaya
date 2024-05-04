@@ -23,9 +23,12 @@ import EmployeesView from "@/views/master/employeesView.vue";
 import SettingsView from "@/views/master/settingsView.vue";
 import UsersView from "@/views/master/usersView.vue";
 import AddMenuView from "@/views/master/addMenuView.vue";
+// slice
+import BerandaSlice from "@/components/slice/BerandaSlice.vue";
 
 const routes = [
   { path: "/", name: "landing", component: LandingPage },
+  { path: "/beranda-slice", name: "beranda slice", component: BerandaSlice },
   { path: "/beranda", name: "beranda", component: BerandaView },
   { path: "/login", name: "Login", component: LoginPage },
   {
