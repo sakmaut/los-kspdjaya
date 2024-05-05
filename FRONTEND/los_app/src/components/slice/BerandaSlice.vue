@@ -82,13 +82,18 @@
         <div class="main-content">
             <div class="topbar">
                 <span>header title</span>
-                <div>
-                    <label for="input" class="text-base absolute pt-2 ps-2">
-                        <v-icon name="hi-search" class="text-sc-200" /> </label>
-                    <input id="input" type="text" placeholder="cari"
-                        class="border w-full text-base dark:text-osf-drk p-2 ps-8 font-medium focus:outline-none focus:ring-2 focus:ring-pr rounded-xl" />
+                <div class="w-1/2">
+                    <label for="input" class="text-base absolute pt-2 ps-2 text-sc-200">
+                        <v-icon name="hi-search" /> Cari </label>
+                    <input id="input" type="text"
+                        class="border focus:ps-2 w-full text-base dark:text-osf-drk p-2 px-8 font-medium focus:outline-none focus:ring-2 focus:ring-pr rounded-xl" />
+                    <label for="" class="text-base absolute  pt-2 ps-2 -ml-10">
+                        <v-icon name="hi-camera" class="text-sc-200" /> </label>
                 </div>
                 <div class="wrap gap-4 flex">
+                    <div class="button-reg">
+                        <v-icon name="hi-sun" />
+                    </div>
                     <div class="button-reg">
                         <v-icon name="hi-at-symbol" />
                     </div>

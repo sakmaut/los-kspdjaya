@@ -1,8 +1,6 @@
 <template>
-    <div class="dark:bg-sf-drk ">
-        <div class="flex dark:bg-sf-drk-100">
-            <img src="../../assets/art1.svg" alt="logo_company" class="w-5/6">
-        </div>
+    <div class="flex w-full dark:bg-sf-drk-100">
+        <img src="../../assets/art1.svg" alt="logo_company" class="w-full h-full">
     </div>
 </template>
 <script setup>
