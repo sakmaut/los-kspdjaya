@@ -23,6 +23,7 @@ use App\Http\Controllers\API\Menu\MasterMenuController;
 use App\Http\Controllers\API\Menu\MasterRoleController;
 use App\Http\Controllers\Laporan\HistoryAccController;
 use App\Http\Controllers\Laporan\PaymentDumpController;
+use App\Http\Controllers\Welcome;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -61,6 +62,8 @@ Route::post('createUser', [UsersController::class, 'store']);
 Route::get('approval/{id}', [SlikApprovalController::class, 'index']);
 
 Route::post('text_file', [TextFileReader::class, 'uploadText']);
+
+Route::apiResource('welcome', Welcome::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     //Route Group Master Menu
