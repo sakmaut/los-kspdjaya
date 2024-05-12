@@ -1,25 +1,20 @@
 <template>
-    <div class="flex flex-col items-center justify-between">
-        <div>
-            <div class="flex items-center justify-between">
-                <div class="flex">
-                    <div class="m-3 pt-4 h-10 justify-center items-center flex">
-                        <img class="w-10"
-                            src="http://8a73085df21a.sn.mynetname.net:9000/storage/public/assets/nmhregd35XcxiUk6ABtZVwIa46XS9xrdQPM9upTW.svg" />
-                    </div>
-                    <div class="hidden lg:flex pt-4 font-bold items-center">
-                        {{ title }}
-                        {{ name_app }}
-                        {{ theme_app }}
-                    </div>
+    <div class="h-full flex flex-col justify-between bg-white">
+        <div class="wrap">
+            <div class="flex p-2 items-center justify-center gap-2">
+                <div class="h-10">
+                    <img class="w-10" src="../assets/logo.png" />
+                </div>
+                <div class="hidden lg:flex font-bold items-center">
+                    {{ name_app }}
                 </div>
             </div>
-            <div class="p-2">
+            <div class="mt-4 p-2">
                 <SideMenu />
             </div>
         </div>
-        <div class="p-2">
-            <DarkMode />
+        <div>
+            <DropDownAccount />
         </div>
     </div>
 </template>
@@ -28,6 +23,7 @@ import { ref } from "vue";
 import { useEnvapp } from "@/stores/envapp.js";
 import SideMenu from '@/components/organism/SideMenu.vue';
 import DarkMode from "@/components/atoms/DarkMode.vue";
+import DropDownAccount from "@/components/DropDownAccount.vue";
 const toggleSide = ref();
 const toggleSideMenu = () => {
     toggleSide.value = !toggleSide.value;

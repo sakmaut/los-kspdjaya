@@ -12,8 +12,17 @@ const useAPIget = async (route, token) => {
     await axios.get(`${apibase}/${route}`, config).then((res) => {
       data.push(res.data.response);
     });
-    // let productlist = getListProduct.data.response;
-    // data.push(productlist);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+const useOpenAPIget = async (url) => {
+  const data = [];
+  try {
+    await axios.get(url).then((res) => {
+      data.push(res.data);
+    });
     return data;
   } catch (error) {
     console.log(error);
@@ -37,4 +46,4 @@ const useAPIPost = async (route, token, payload) => {
   }
 };
 
-export { useAPIget, useAPIPost };
+export { useAPIget, useAPIPost, useOpenAPIget };

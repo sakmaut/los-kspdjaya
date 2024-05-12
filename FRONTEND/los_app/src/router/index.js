@@ -43,7 +43,7 @@ const routes = [
       },
     ],
   },
-  { path: "/apply-loan", name: "Apply", component: ApplyPage },
+  { path: "/apply-loan", component: ApplyPage },
   {
     path: "/task",
     name: "task",
@@ -52,11 +52,17 @@ const routes = [
     children: [
       {
         path: "apply-loan",
+        name: "input kunjungan",
         component: ApplyPage,
       },
       {
         name: "Form Pengajuan Kredit",
         path: "apply-credit/:prospectId",
+        component: ApplyCredit,
+      },
+      {
+        name: "Form Pengajuan Kredit",
+        path: "apply-credit",
         component: ApplyCredit,
       },
       {

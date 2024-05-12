@@ -7,7 +7,7 @@
             </div>
             <div class="overflow-auto bg-white dark:bg-sfd-drk min-h-full max-h-80">
                 <div class="mb-16">
-                    <input type="text" ref="target" v-model="wawa" />
+                    <DialogAt />
                 </div>
             </div>
         </div>
@@ -38,5 +38,6 @@ watch(focused, (focused) => {
 })
 // import Testcomp from "@/views/FormJaminan.vue";
 import Testcomp from "@/components/organism/SmMenu.vue";
+import DialogAt from "@/components/atoms/DialogAt.vue";
 // import Testcomp2 from "@/components/molecules/DisclosMenuSusp.vue";
 </script>

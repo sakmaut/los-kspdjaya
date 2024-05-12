@@ -1,10 +1,5 @@
 <template>
-    <div class="p-2 md:p-10 min-w-full min-h-full flex flex-col justify-between">
-        <div>
-            <div class="flex justify-end">
-                <DarkMode />
-            </div>
-        </div>
+    <div class="p-2 md:p-10 min-w-full min-h-full flex flex-col justify-center">
         <div>
             <div class="text-pr dark:text-osf-drk">
                 <div class="flex   dark:bg-sf-drk-100">

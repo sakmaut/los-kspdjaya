@@ -281,7 +281,7 @@ const removeData = (e) => {
 }
 </script>
 
-<style>
+<style scoped>
 .text-class {
     @apply text-sc-600 dark:text-sc-200
 }

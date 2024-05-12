@@ -113,6 +113,7 @@ module.exports = {
           ot: "#d1dae6",
         },
         tr: "#faa954",
+        accent: "#fde047",
         otr: "#ffffff",
         er: "#b3261e",
         oer: "#ffffff",

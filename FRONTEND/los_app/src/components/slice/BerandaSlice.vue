@@ -103,7 +103,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flexbox ">
+            <div class="flexbox">
                 <div class="card">
                     <div class="flex items-center gap-2">
                         <div
@@ -258,7 +258,7 @@
 
 </script>
 
-<style  scoped>
+<style scoped>
 td {
     @apply p-2 border-b
 }

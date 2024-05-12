@@ -1,14 +1,34 @@
 <template>
-    <Menu as="div" class="z-50 inline-block text-left">
+    <div class="p-2">
         <div v-for="me in dataMe">
-            <MenuButton class="p-2 rounded-full ">
-                <div class="flex gap-x-3">
-                    <div class="hidden md:block">
-                        <p class="text-xs">{{ me.NAMA }}</p>
-                        <p class="text-xs text-gray-500">@{{ me.USERNAME }}</p>
+            <div class="flex items-center justify-between bg-pr-50 w-full rounded-xl p-2 pe-2">
+                <div class="wrap flex gap-2">
+                    <img class="avatar w-8  object-cover rounded-full h-8"
+                        src="https://abuhapsins.wordpress.com/wp-content/uploads/2013/09/dsc_1250-copy.jpg" />
+                    <div>
+                        <p class="text-sc text-sm">{{ me.NAMA }}</p>
+                        <p class="text-xs text-pr">{{ me.EMAIL ? me.EMAIL : 'u/n' }}</p>
                     </div>
-                    <div
-                        class="w-8 h-8 aspect-square ring-2 ring-pr dark:ring-pr-500 flex-none rounded-full bg-gray-50 bg-center bg-cover bg-[url('https://i.pinimg.com/originals/cc/fa/fa/ccfafa7d3f0085259373767048fa223c.jpg')]">
+                </div>
+                <v-icon name="hi-solid-chevron-down" />
+            </div>
+        </div>
+
+    </div>
+    <!-- <Menu as="div" class="z-50 inline-block text-left">
+        <div v-for="me in dataMe">
+            <MenuButton>
+                <div class="bottom-menu p-2">
+                    <div class="flex items-center justify-between bg-pr-50 w-full rounded-xl ">
+                        <div class="wrap flex gap-2">
+                            <img class="avatar w-10  object-cover rounded-full h-10"
+                                src="https://abuhapsins.wordpress.com/wp-content/uploads/2013/09/dsc_1250-copy.jpg" />
+                            <div>
+                                <p class="text-sc text-sm">{{ me.NAMA }}</p>
+                                <p class="text-xs text-pr">{{ me.EMAIL ? me.EMAIL : 'u/n' }}</p>
+                            </div>
+                        </div>
+                        <v-icon name="hi-solid-chevron-down" />
                     </div>
                 </div>
             </MenuButton>
@@ -49,7 +69,7 @@
                 </div>
             </MenuItems>
         </transition>
-    </Menu>
+    </Menu> -->
 </template>
 
 <script setup>

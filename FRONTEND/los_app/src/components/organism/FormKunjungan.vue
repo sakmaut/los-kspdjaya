@@ -2,15 +2,14 @@
 import { useStepper, useGeolocation, useOnline, useMediaQuery } from "@vueuse/core";
 import { onMounted, reactive, ref, computed, watch } from 'vue'
 import BaseInputAt from '../atoms/BaseInputAt.vue';
-import CleaveInputAt from '../atoms/CleaveInputAt.vue';
-import BaseRadioButtonGroup from '../molecules/BaseRadioButtonGroup.vue';
-import SwitchAt from "../atoms/SwitchAt.vue";
+import InputFormAt from '../atoms/InputFormAt.vue';
 import OverlayAt from "../atoms/OverlayAt.vue";
 import BaseButtonAt from "../atoms/BaseButtonAt.vue";
 import BaseInputSingleImageAt from '@/components/atoms/BaseInputSingleImageAt.vue';
 import BaseInputMultiImageAt from '@/components/atoms/BaseInputMultiImageAt.vue';
-import BaseTextareaAt from "../atoms/BaseTextareaAt.vue";
+import HeadContainer from '@/components/atoms/HeadContainerAt.vue';
 import BaseSelectBoxAt from "../atoms/BaseSelectBoxAt.vue";
+import SelectState from "../organism/SelectStateRegion.vue";
 import useUuid from "@/support/uuid";
 import { useDate } from "@/support/date";
 import useForm from "@/support/form";
@@ -22,19 +21,12 @@ const isLargeScreen = useMediaQuery('(min-width:1024px)');
 const visitDate = useDate();
 const uuid = useUuid();
 const { numberOnly } = useForm();
-const location = useGeolocation();
-const { error } = useGeolocation();
 import router from "@/router";
-
-const status_hubungan = ref("");
 
 const numberInput = {
     numeral: true,
-    numeralPositiveOnly: false,
-    noImmediatePrefix: false,
-    rawValueTrimPrefix: true,
-    numeralIntegerScale: 15,
-    numeralDecimalScale: 1
+    prefix: 'Rp ',
+    noImmediatePrefix: true
 };
 // const formWarning = ref(false);
 const reqSlik = ref(false);
@@ -124,10 +116,10 @@ const handlePostForm = async () => {
 const form = reactive({
     id: uuid,
     visit_date: visitDate,
-    tujuan_kredit: '',
+    tujuan_kredit: 'pilih',
     jenis_produk: '',
     plafond: '',
-    tenor: '',
+    tenor: 'pilih',
     nama: '',
     ktp: '',
     kk: '',
@@ -216,12 +208,22 @@ const stepper = useStepper({
         isValid: () => form.tujuan_kredit && form.plafond && form.tenor && form.jenis_produk,
     },
     'nasabah': {
-        title: 'Data Nasabah',
+        title: 'Data Nasabah & Pasangan',
         icon: 'ri-file-user-fill',
         isValid: () => form.nama && form.ktp && form.kk && form.tgl_lahir && form.alamat && form.hp,
     },
+    'usaha': {
+        title: 'Data Usaha',
+        icon: 'ri-file-shield-2-fill',
+        isValid: () => form.usaha && form.sector && form.jaminan && form.location,
+    },
     'jaminan': {
         title: 'Data Jaminan',
+        icon: 'ri-file-shield-2-fill',
+        isValid: () => form.usaha && form.sector && form.jaminan && form.location,
+    },
+    'Lampiran': {
+        title: 'Data Lampiran',
         icon: 'ri-file-shield-2-fill',
         isValid: () => form.usaha && form.sector && form.jaminan && form.location,
     },
@@ -325,24 +327,16 @@ watch(form.penjamin, (n) => {
 
 <template>
     <CardAt>
-        <template #header>
-            <div class="flex items-center gap-2 mb-4">
-                <div @click="backPage"
-                    class="flex text-pr dark:text-pr-500 hover:bg-sfcls dark:hover:bg-sf-drk-200 rounded-full aspect-square p-1 cursor-pointer">
-                    <v-icon name="ri-arrow-left-line" scale="1.5"></v-icon>
-                </div>
-                Input Kunjungan {{ locationPermition }}
-            </div>
-        </template>
         <template #body>
             <div
-                class="flex bg-sfc dark:bg-sf-drk-300 py-4 rounded-xl text-pr dark:text-sf justify-around shadow border-sfd border-2 dark:border-sf-drk-100">
+                class="flex flex-col md:flex-row dark:bg-sf-drk-300 py-4 rounded-xl dark:text-sf justify-start gap-2 dark:border-sf-drk-100">
                 <div v-for="(step, id, i) in stepper.steps.value" :key="id" class="flex gap-2 cursor-pointer"
                     @click="stepper.goTo(id)" :class="stepper.isBefore(id) ? 'text-sf-drk-600' : 'text-primary'">
-                    <button class="flex justify-start" :disabled="!allStepsBeforeAreValid(i) && stepper.isBefore(id)">
-                        <div class="flex gap-2 flex-col md:flex-row">
+                    <button class="flex w-full justify-start"
+                        :disabled="!allStepsBeforeAreValid(i) && stepper.isBefore(id)">
+                        <div class="flex border p-4 rounded-xl gap-2 md:flex-row">
                             <div class="w-11 rounded-full flex items-center justify-center p-2 aspect-square"
-                                :class="stepper.isBefore(id) ? 'bg-pr-500/20 text-reg' : 'bg-pr dark:bg-pr-500 text-white'">
+                                :class="stepper.isBefore(id) ? 'bg-accent/20 text-sc-300' : 'bg-accent dark:bg-pr-500'">
                                 <v-icon :name="step.icon"></v-icon>
                             </div>
                             <div class="text-left">
@@ -353,226 +347,177 @@ watch(form.penjamin, (n) => {
                     </button>
                 </div>
             </div>
-
+            <HeadContainer title="Form Kunjungan" subtitle="form inputan kunjungan nasabah" />
             <form @submit.prevent="submit">
-                <div class="flex flex-col justify-center gap-2 mt-2">
-                    <div class="bg-sf dark:bg-sf-drk-300 dark:border-sf-drk-100 mt-4 rounded-xl">
-                        <div v-if="stepper.isCurrent('credit')">
-                            <div>
-                                <div class="col-span-2" v-if="isLargeScreen">
-                                    <BaseRadioButtonGroup :options="listProduct" v-model="form.jenis_produk"
-                                        label="Pilih Produk Kredit" v-if="listProduct.length <= 8">
-                                    </BaseRadioButtonGroup>
-                                    <ListBoxAt :lists="listProduct" @custom="listSelected" label="Pilih Produk Kredit"
-                                        v-else />
-                                </div>
-                                <div class="col-span-2" v-else>
-                                    <ListBoxAt :lists="listProduct" @custom="listSelected" label="Pilih Produk Kredit" />
-                                </div>
-                                <div v-if="form.jenis_produk" class="grid grid-cols-1 md:grid-cols-3 ">
-                                    <BaseSelectBoxAt label="Tujuan Kredit" :options="tujuan" v-model="form.tujuan_kredit" />
-                                    {{
-                                        status_hubungan }}
-                                    <CleaveInputAt label="plafond" v-model="form.plafond" :options="numberInput"
-                                        :error="v$.plafond.$error && v$.plafond.$errors[0].$message"
-                                        @blur="v$.plafond.$touch" />
-                                    <BaseInputAt label="Tenor" @keypress="numberOnly" v-model="form.tenor"
-                                        :error="v$.tenor.$error && v$.tenor.$errors[0].$message" @blur="v$.tenor.$touch" />
-                                </div>
-                            </div>
-                        </div>
-                        <div v-if="stepper.isCurrent('nasabah')">
-                            <div class="grid grid-cols-1 md:grid-cols-3 p-4 bg-sf dark:bg-sf-drk-300 mt-4 rounded-xl">
-                                <BaseInputAt label="Nama" v-model="form.nama"
-                                    :error="v$.nama.$error && v$.nama.$errors[0].$message" @blur="v$.nama.$touch" />
-                                <BaseInputAt label="No KTP" maxlength="16" v-model="form.ktp" @keypress="numberOnly"
-                                    :error="v$.ktp.$error && v$.ktp.$errors[0].$message" @blur="v$.ktp.$touch" />
-                                <BaseInputAt label="KK" maxlength="16" v-model="form.kk" @keypress="numberOnly"
-                                    :error="v$.kk.$error && v$.kk.$errors[0].$message" @blur="v$.kk.$touch" />
-                                <BaseInputAt label="Tanggal Lahir" type="date" v-model="form.tgl_lahir"
-                                    :error="v$.tgl_lahir.$error && v$.tgl_lahir.$errors[0].$message"
-                                    @blur="v$.tgl_lahir.$touch" />
-                                <BaseTextareaAt label="Alamat" v-model="form.alamat"
-                                    :error="v$.alamat.$error && v$.alamat.$errors[0].$message" @blur="v$.alamat.$touch" />
-                                <BaseInputAt label="No Handphone" v-model="form.hp" max-length="13" @keypress="numberOnly"
-                                    :error="v$.hp.$error && v$.hp.$errors[0].$message" @blur="v$.hp.$touch" />
-                            </div>
-                        </div>
-
-                        <div v-if="stepper.isCurrent('jaminan')">
-                            <div class="grid grid-col md:grid-cols-2 p-4 bg-sf dark:bg-sf-drk-300 mt-4 rounded-xl">
-                                <BaseInputAt label="Usaha" v-model="form.usaha"
-                                    :error="v$.usaha.$error && v$.usaha.$errors[0].$message" @blur="v$.usaha.$touch" />
-                                <BaseInputAt label="Sector" v-model="form.sector"
-                                    :error="v$.sector.$error && v$.sector.$errors[0].$message" @blur="v$.sector.$touch" />
-
-                                <!-- *jaminan -->
-                                <div
-                                    class="bg-sf dark:bg-sf-drk-200 dark:border-sf-drk-100 border-pr-300 border-2 border-dashed p-2 rounded col-span-2 m-2">
-                                    <div class="flex justify-between">
-                                        <div>
-                                            <label class="flex text-reg pb-2 font-medium">Jaminan
-                                            </label>
-                                            <label
-                                                class="bg-erc text-er border-er border-2 border-tertiary p-1 rounded-xl m-2"
-                                                v-if="form.jaminan.length > 0">{{
-                                                    form.jaminan.length
-                                                }} data jaminan</label>
-                                        </div>
-                                        <BaseButtonAt
-                                            class="flex bg-pr dark:bg-pr-500 gap-2 items-center text-sf w-fit h-fit p-2 "
-                                            @click="addJaminan()" v-if="form.jaminan.length <= 100">
-                                            <v-icon name="ri-add-circle-line" scale="1.2" />jaminan
-                                        </BaseButtonAt>
-                                    </div>
-                                    <div class="flex flex-col items-end mt-2 bg-sfd dark:bg-sf-drk-400 border-2 border-primary md:border-0 md:flex-row rounded-xl gap-4"
-                                        v-for="(jaminan, i) in form.jaminan" :key="i">
-                                        <BaseSelectBoxAt label="Jenis" :options="typeJaminan" v-model="jaminan.type" />
-                                        <div class="input-wrap w-full p-2 inline-block">
-                                            <label class="flex text-reg pb-2 font-medium">Nilai</label>
-                                            <cleave v-model="jaminan.collateral_value" :options="numberInput"
-                                                class=" dark:bg-sf-drk-200 dark:border-sf-drk-100 disabled:text-reg disabled:cursor-not-allowed
-            file:absolute file:right-0 w-full p-2 border-2  focus:outline-none focus:ring-2 focus:ring-primary rounded-md" name="card" />
-                                            <label v-if="error" class="flex text-pink-500 pt-2 text-sm">{{ error
-                                            }}</label>
-                                        </div>
-
-                                        <BaseInputAt label="Deskripsi" v-model="jaminan.description" />
-                                        <div class="flex gap-2">
-                                            <!-- <BaseButtonAt class="mb-2 bg-reg/70 text-primary p-2 outline-1">
-                                            <div class="flex">
-                                                <v-icon name="ri-attachment-2" scale="1.2" />
-                                                berkas
-                                            </div>
-                                        </BaseButtonAt> -->
-                                            <BaseButtonAt class="mb-2 p-2" @click="removeJaminan(i)">
-                                                <v-icon name="ri-delete-back-2-line" scale="1.2"
-                                                    class="text-reg hover:text-signal-danger" />
-                                            </BaseButtonAt>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                                <!-- end jaminan -->
-
-                                <!-- *penjamin -->
-                                <div
-                                    class="bg-sf dark:bg-sf-drk-200 dark:border-sf-drk-100 border-pr-300 border-2 border-dashed p-2 rounded col-span-2 m-2">
-                                    <div class="flex justify-between">
-                                        <div>
-                                            <label class="flex text-reg pb-2 font-medium">Penjamin</label>
-                                            <label
-                                                class="bg-erc text-er border-er border-2 border-tertiary p-1 rounded-xl m-2"
-                                                v-if="form.penjamin.length > 0">{{
-                                                    form.penjamin.length
-                                                }} data penjamin</label>
-                                        </div>
-                                        <BaseButtonAt
-                                            class="flex bg-pr dark:bg-pr-500 gap-2 items-center text-sf w-fit h-fit p-2"
-                                            @click="addPenjamin()" v-if="form.penjamin.length <= 100">
-                                            <v-icon name="ri-add-circle-line" scale="1.2" />penjamin
-                                        </BaseButtonAt>
-                                    </div>
-                                    <div class="flex flex-col items-end mt-2 bg-sfd dark:bg-sf-drk-400 border-2 border-primary md:border-0 md:flex-row rounded-xl gap-4"
-                                        v-for="(penjamin, i) in form.penjamin" :key="i">
-                                        <BaseInputAt label="Nama" v-model="penjamin.nama" />
-                                        <BaseInputAt label="No KTP Penjamin" v-model="penjamin.ktp" maxlength="16" />
-                                        <BaseInputAt label="Tanggal Lahir" type="date" v-model="penjamin.tgl_lahir" />
-                                        <BaseInputAt label="Pekerjaan" v-model="penjamin.pekerjaan" />
-                                        <BaseSelectBoxAt label="Hubungan" :options="hubungan" v-model="penjamin.status" />{{
-                                            status_hubungan }}
-                                        <BaseButtonAt class="mb-2 p-2" @click="removePenjamin(i)">
-                                            <v-icon name="ri-delete-back-2-line" scale="1.2"
-                                                class="text-reg hover:text-signal-danger" />
-                                        </BaseButtonAt>
-                                    </div>
-                                </div>
-                                <!-- end penjamin -->
-                                <!-- *slik request -->
-                                <div class="p-2 col-span-2">
-                                    <div class="w-full p-4 rounded-xl bg-sfc dark:bg-sf-drk-200 text-pr dark:text-sf">
-                                        <div class="flex justify-between text-primary
-                        font-semibold">
-                                            <div>Ajukan slik</div>
-                                            <div>
-                                                <SwitchAt v-model="reqSlik" />
-                                            </div>
-                                        </div>
-                                        <Transition>
-                                            <div v-if="form.slik"
-                                                class="bg-sfcl dark:bg-sf-drk-400 mt-2 border-2 border-dashed border-signal-warning p-2 rounded col-span-2 ">
-                                                <div class="grid grid-flow-col p-2 gap-4"
-                                                    :class="!isPasangan ? 'grid-cols-3' : 'grid-cols-2'">
-                                                    <BaseInputSingleImageAt label="KTP" v-model="slikAttach.file_ktp"
-                                                        @reset-image="slikAttach.file_ktp = null" />
-                                                    <BaseInputSingleImageAt label="Kartu Keluarga"
-                                                        v-model="slikAttach.file_kk"
-                                                        @reset-image="slikAttach.file_kk = null" />
-                                                    <BaseInputSingleImageAt v-if="!isPasangan" label="Buku Nikah"
-                                                        v-model="slikAttach.file_buknik"
-                                                        @reset-image="slikAttach.file_buknik = null" />
-                                                </div>
-                                            </div>
-                                        </Transition>
-                                    </div>
-                                </div>
-                                <!-- endslik -->
-                                <BaseInputMultiImageAt label="Lampiran Kunjungan" class="col-span-2"
-                                    v-model="form.attachment">
-                                </BaseInputMultiImageAt>
-                                <div class="p-2 col-span-2">
-                                    <div class="p-2 bg-sfc dark:bg-sf-drk-200 rounded-xl ">
-                                        <div
-                                            class="flex w-full p-4 justify-between items-center text-primary font-semibold">
-                                            <div class="flex items-center gap-2">
-                                                <div
-                                                    class="w-11 rounded-full flex items-center justify-center p-2 aspect-square bg-pr text-white">
-                                                    <v-icon name="ri-map-pin-line"></v-icon>
-                                                </div>
-                                                <div>Buat Titik Lokasi</div>
-                                            </div>
-                                            <div>
-                                                <SwitchAt v-model="reqLocation" />
-                                            </div>
-                                        </div>
-                                        <div v-if="reqLocation" class="grid grid-cols-3">
-                                            <BaseInputAt label="Longitude" disabled
-                                                :value="location.coords.value.longitude" />
-                                            <BaseInputAt label="Latitude" disabled
-                                                :value="location.coords.value.latitude" />
-                                            <BaseInputAt label="Accuracy" disabled
-                                                :value="location.coords.value.accuracy" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div v-if="stepper.isCurrent('selesai')">
-                            <div class="flex w-full justify-center">
-                                <LoaderComponent />
-                            </div>
-                        </div>
-                        <div class="flex gap-4 p-2 justify-between pt-10">
-                            <BaseButtonAt @click="backstep" v-if="!stepper.isFirst.value"
-                                class="text-pr bg-sfc justify-center dark:bg-sfcl-500 font-semibold disabled:cursor-not-allowed disabled:bg-plate disabled:text-reg rounded-xl dark:text-sf-drk-200 p-2 w-full md:w-1/5 h-15">
-                                kembali
-                            </BaseButtonAt>
-
-                            <BaseButtonAt v-if="!stepper.isLast.value"
-                                class="bg-pr justify-center dark:bg-pr-500 hover:bg-pr/90 font-semibold hover:shadow-md disabled:cursor-not-allowed disabled:bg-plate disabled:text-reg rounded-xl text-white dark:text-white w-full md:w-1/5 h-15">
-                                Selanjutnya
-                            </BaseButtonAt>
-                            <BaseButtonAt v-if="stepper.isLast.value" @click="handlePostForm" :disabled="loadingpost"
-                                class="bg-pr justify-center dark:bg-pr-500 hover:bg-pr/90 font-semibold hover:shadow-md disabled:cursor-not-allowed disabled:bg-plate disabled:text-reg bg-primary rounded-xl text-white w-full md:w-1/5 h-15">
-                                <span v-if="!loadingpost">Simpan</span>
-                                <div v-else>
-                                    <LoaderComponent />
-                                </div>
-                            </BaseButtonAt>
+                <div class=" mt-4 rounded-xl">
+                    <div class="text-base italic text-sc-300 py-2 pb-4">
+                        Informasi Kredit
+                        <hr />
+                    </div>
+                    <div v-if="stepper.isCurrent('credit')">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <BaseSelectBoxAt label="Tujuan Kredit" :options="tujuan" v-model="form.tujuan_kredit" />
+                            <BaseInputAt max=20 :options="numberInput" label="plafond" v-model="form.plafond"
+                                :error="v$.plafond.$error && v$.plafond.$errors[0].$message"
+                                @blur="v$.plafond.$touch" />
+                            <BaseSelectBoxAt label="Tenor" :options="tujuan" v-model="form.tujuan_kredit" />
                         </div>
                     </div>
+                    <div class="text-base italic text-sc-300 py-2">
+                        Informasi Nasabah
+                        <hr />
+                    </div>
+                    <div v-if="stepper.isCurrent('credit')">
+                        <div class="grid grid-cols-1 md:grid-cols-4 ">
+
+                            <BaseInputSingleImageAt label="KTP" v-model="slikAttach.file_ktp"
+                                @reset-image="slikAttach.file_ktp = null" />
+                            <div class="col-span-3 gap-2 grid grid-cols-3 p-2">
+                                <BaseInputAt label="No KTP" v-model="form.ktp" @keypress="numberOnly"
+                                    :error="v$.ktp.$error && v$.tenor.$ktp[0].$message" @blur="v$.ktp.$touch" max=16 />
+                                <BaseInputAt label="nama" v-model="form.tenor"
+                                    :error="v$.tenor.$error && v$.tenor.$errors[0].$message" @blur="v$.tenor.$touch" />
+                                <InputFormAt label="tanggal lahir" type="date" v-model="form.tenor"
+                                    :error="v$.tenor.$error && v$.tenor.$errors[0].$message" @blur="v$.tenor.$touch" />
+                                <BaseInputAt label="No Handphone" max=13 v-model="form.hp" @keypress="numberOnly"
+                                    :options="phoneFormat" :error="v$.hp.$error && v$.hp.$errors[0].$message"
+                                    @blur="v$.hp.$touch" />
+                                <div class="col-span-3 flex gap-2">
+                                    <BaseInputAt label="alamat" class="w-11/12" v-model="form.alamat"
+                                        :error="v$.alamat.$error && v$.alamat.$errors[0].$message"
+                                        @blur="v$.alamat.$touch" />
+                                    <BaseInputAt label="RT" max=3 v-model="form.nama"
+                                        :error="v$.nama.$error && v$.nama.$errors[0].$message" @blur="v$.nama.$touch" />
+                                    <BaseInputAt label="RW" max=3 v-model="form.nama"
+                                        :error="v$.nama.$error && v$.nama.$errors[0].$message" @blur="v$.nama.$touch" />
+                                </div>
+                                <SelectState />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-base italic text-sc-300 py-2">
+                        Informasi Pasangan
+                        <hr />
+                    </div>
+                    <div v-if="stepper.isCurrent('credit')">
+                        <div class="grid grid-cols-1 md:grid-cols-4 ">
+                            <BaseInputSingleImageAt label="KTP Pasangan" v-model="slikAttach.file_ktp"
+                                @reset-image="slikAttach.file_ktp = null" />
+                            <div class="col-span-3 gap-2 grid grid-cols-3 p-2">
+                                <BaseInputAt label="No KTP" v-model="form.tenor"
+                                    :error="v$.tenor.$error && v$.tenor.$errors[0].$message" @blur="v$.tenor.$touch" />
+                                <BaseInputAt label="nama" v-model="form.tenor"
+                                    :error="v$.tenor.$error && v$.tenor.$errors[0].$message" @blur="v$.tenor.$touch" />
+                                <BaseInputAt label="tanggal lahir" v-model="form.tenor"
+                                    :error="v$.tenor.$error && v$.tenor.$errors[0].$message" @blur="v$.tenor.$touch" />
+                                <div class="col-span-3 flex gap-2">
+                                    <BaseInputAt label="alamat" class="w-11/12" v-model="form.nama"
+                                        :error="v$.nama.$error && v$.nama.$errors[0].$message" @blur="v$.nama.$touch" />
+                                    <BaseInputAt label="Rt" v-model="form.nama"
+                                        :error="v$.nama.$error && v$.nama.$errors[0].$message" @blur="v$.nama.$touch" />
+                                    <BaseInputAt label="Rw" v-model="form.nama"
+                                        :error="v$.nama.$error && v$.nama.$errors[0].$message" @blur="v$.nama.$touch" />
+                                </div>
+                                <SelectState />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-base italic text-sc-300 py-2">
+                        Informasi Kartu Keluarga
+                        <hr />
+                    </div>
+                    <div v-if="stepper.isCurrent('credit')">
+                        <div class="grid grid-cols-1 md:grid-cols-4 ">
+                            <BaseInputSingleImageAt label="KK" v-model="slikAttach.file_ktp"
+                                @reset-image="slikAttach.file_ktp = null" />
+                            <div class="col-span-3 gap-2 grid  p-2">
+                                <BaseInputAt label="No KK" v-model="form.tenor" @keypress="numberOnly"
+                                    :error="v$.tenor.$error && v$.tenor.$errors[0].$message" @blur="v$.tenor.$touch" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-base italic text-sc-300 py-2">
+                        Informasi Usaha
+                        <hr />
+                    </div>
+                    <div v-if="stepper.isCurrent('credit')">
+                        <div class="grid grid-cols-1">
+                            <BaseInputMultiImageAt label="Foto Usaha" v-model="slikAttach.file_ktp"
+                                @reset-image="slikAttach.file_ktp = null" />
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <BaseInputAt label="Nama Usaha" v-model="form.tenor"
+                                :error="v$.tenor.$error && v$.tenor.$errors[0].$message" @blur="v$.tenor.$touch" />
+                            <BaseInputAt label="Sektor Usaha" v-model="form.tenor"
+                                :error="v$.tenor.$error && v$.tenor.$errors[0].$message" @blur="v$.tenor.$touch" />
+                            <BaseInputAt label="Lama Usaha (bulan)" v-model="form.tenor"
+                                :error="v$.tenor.$error && v$.tenor.$errors[0].$message" @blur="v$.tenor.$touch" />
+                        </div>
+                    </div>
+                </div>
+                <div class="text-base italic text-sc-300 py-2">
+                    Informasi Jaminan
+                    <hr />
+                </div>
+                <div v-if="stepper.isCurrent('credit')">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+                        <div class="flex h-40">
+                            <BaseInputSingleImageAt label="STNK" v-model="slikAttach.file_ktp"
+                                @reset-image="slikAttach.file_ktp = null" />
+                        </div>
+                        <div class="flex h-40">
+                            <BaseInputSingleImageAt label="No Rangka" v-model="slikAttach.file_ktp"
+                                @reset-image="slikAttach.file_ktp = null" />
+                        </div>
+                        <div class="flex h-40">
+                            <BaseInputSingleImageAt label="No Mesin" v-model="slikAttach.file_ktp"
+                                @reset-image="slikAttach.file_ktp = null" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+                        <BaseInputSingleImageAt label="Foto Depan" v-model="slikAttach.file_ktp"
+                            @reset-image="slikAttach.file_ktp = null" />
+                        <BaseInputSingleImageAt label="Foto Belakang" v-model="slikAttach.file_ktp"
+                            @reset-image="slikAttach.file_ktp = null" />
+                        <BaseInputSingleImageAt label="Foto Kanan" v-model="slikAttach.file_ktp"
+                            @reset-image="slikAttach.file_ktp = null" />
+                        <BaseInputSingleImageAt label="Foto Kiri" v-model="slikAttach.file_ktp"
+                            @reset-image="slikAttach.file_ktp = null" />
+                    </div>
+                </div>
+
+                <div class="text-base italic text-sc-300 py-2">
+                    Lampiran lain-lain
+                    <hr />
+                </div>
+                <div v-if="stepper.isCurrent('credit')">
+                    <div class="grid grid-cols-1 gap-2 mb-2">
+                        <BaseInputMultiImageAt label="Lampiran Lain Lain" class="col-span-2" v-model="form.attachment">
+                        </BaseInputMultiImageAt>
+                    </div>
+                </div>
+                <div v-if="stepper.isCurrent('!selesai')">
+                    <div class="flex w-full justify-center">
+                        <LoaderComponent />
+                    </div>
+                </div>
+                <div class="flex gap-4 p-2 justify-between pt-10">
+                    <BaseButtonAt @click="backstep" v-if="!stepper.isFirst.value"
+                        class="text-pr bg-sfc justify-center dark:bg-sfcl-500 font-semibold disabled:cursor-not-allowed disabled:bg-plate disabled:text-reg rounded-xl dark:text-sf-drk-200 p-2 w-full md:w-1/5 h-15">
+                        kembali
+                    </BaseButtonAt>
+
+                    <BaseButtonAt v-if="!stepper.isLast.value"
+                        class="bg-pr justify-center dark:bg-pr-500 hover:bg-pr/90 font-semibold hover:shadow-md disabled:cursor-not-allowed disabled:bg-plate disabled:text-reg rounded-xl text-white dark:text-white w-full md:w-1/5 h-15">
+                        Selanjutnya
+                    </BaseButtonAt>
+                    <BaseButtonAt v-if="stepper.isLast.value" @click="handlePostForm" :disabled="loadingpost"
+                        class="bg-pr justify-center dark:bg-pr-500 hover:bg-pr/90 font-semibold hover:shadow-md disabled:cursor-not-allowed disabled:bg-plate disabled:text-reg bg-primary rounded-xl text-white w-full md:w-1/5 h-15">
+                        <span v-if="!loadingpost">Simpan</span>
+                        <div v-else>
+                            <LoaderComponent />
+                        </div>
+                    </BaseButtonAt>
                 </div>
             </form>
         </template>

@@ -1,27 +1,39 @@
 <template>
-    <ScaffMol class="overflow-hidden min-h-screen bg-sfcl">
-        <div class="md:flex bg-sfcl dark:bg-sf-drk-100 w-fit p-0 md:p-2" ref="el" v-if="sidebarVisible">
-            <SideBar />
+    <ScaffMol class="w-full h-svh">
+        <div class="w-1/6 md:flex bg-white dark:bg-sf-drk-100 p-0 " ref="el" v-if="sidebarVisible">
+            <div class="bg-er w-full">
+                <SideBar />
+            </div>
         </div>
-        <div class="w-full md:p-4 dark:bg-sf-drk-100">
-            <div
-                class="bg-sfcls dark:bg-transparent p-0 md:dark:bg-sf-drk-200 w-full h-full overflow-clip overflow-y-auto md:rounded-3xl">
+        <div class="w-full dark:bg-sf-drk-100">
+            <div class="w-full h-full overflow-clip overflow-y-auto">
                 <div class="flex flex-col ">
-                    <div class="h-80">
-                        <div class="flex flex-col h-screen md:h-full p-2 justify-between md:justify-start z-10">
-                            <div>
-                                <div class="sticky x-50 -top-0.5 mb-2 z-50">
-                                    <NavBar @toggle="showHideLeft" />
-                                </div>
-                                <div>
-                                    <sm-list-menu :id="$route.query.main" />
-                                </div>
-                                <router-view v-slot="{ Component }">
-                                    <Transition name="slide-fade">
-                                        <component :is="Component" />
-                                    </Transition>
-                                </router-view>
+                    <div class="flex flex-col h-screen md:h-full justify-between md:justify-start z-10">
+                        <div>
+                            <div class="sticky z-50 px-4 top-0 py-4 bg-sc-50">
+                                <NavHeaderAt :title="$route.name">
+                                    <div class="flex md:hidden p-2 items-center justify-center gap-2">
+                                        <div class="h-10">
+                                            <img class="w-10" src="../assets/logo.png" />
+                                        </div>
+                                        <div class="hidden lg:flex font-bold items-center">
+                                            {{ name_app }}
+                                        </div>
+                                    </div>
+                                    <template #action>
+                                        <div class="flex gap-2">
+                                            <BaseButton def>
+                                                <v-icon name="hi-bell" />
+                                            </BaseButton>
+                                        </div>
+                                    </template>
+                                </NavHeaderAt>
                             </div>
+                            <router-view v-slot="{ Component }">
+                                <Transition name="slide-fade">
+                                    <component :is="Component" />
+                                </Transition>
+                            </router-view>
                         </div>
                     </div>
                 </div>
@@ -32,17 +44,17 @@
 
 <script setup>
 import ScaffMol from "@/components/molecules/ScaffMol.vue";
-import SmListMenu from "@/components/organism/SmListMenu.vue";
 import SideBar from "./SideBar.vue";
-import NavBar from './NavBar.vue';
 import { useElementBounding } from '@vueuse/core';
 import { reactive, ref } from 'vue';
 import router from "@/router";
 const el = ref(null);
 import { useMediaQuery } from "@vueuse/core";
+import NavHeaderAt from "@/components/atoms/NavHeaderAt.vue";
+import BaseButton from "@/components/atoms/BaseButtonAt.vue";
 const sidebarVisible = ref(useMediaQuery('(min-width:1024px)'));
 const rect = reactive(useElementBounding(el));
-if (localStorage.getItem("token")) {
+if (!localStorage.getItem("token")) {
     router.replace("/");
 }
 const showHideLeft = () => {

@@ -1,8 +1,8 @@
 <template>
-    <nav class="sticky z-50 top-10 flex-no-wrapflex w-full items-center justify-between backdrop-blur-sm ">
+    <nav class="sticky z-50 top-10 flex-no-wrapflex w-full items-center justify-between bg-white backdrop-blur-sm ">
         <div class="bg-sf/80 flex w-full dark:bg-transparent items-center justify-between ps-2">
-            <div class="flex w-fit hover:bg-sfd dark:hover:bg-sf-drk-200 p-1 rounded-full">
-                <div class="hidden w-6 h-6 md:flex p-1 rounded-full justify-center items-center fle cursor-pointer text-pr dark:text-pr-500"
+            <div class="hidden w-fit hover:bg-sfd dark:hover:bg-sf-drk-200 p-1 rounded-full">
+                <div class="hidden w-6 h-6  p-1 rounded-full justify-center items-center fle cursor-pointer text-pr dark:text-pr-500"
                     @click="$emit('toggle', toggleSideMenu)">
                     <v-icon name="bi-layout-sidebar-inset" class="" />
                 </div>
@@ -16,6 +16,16 @@
                     </div>
                 </div>
             </div>
+            <HeaderNav title="header">
+                <div class="flex p-2 items-center justify-center gap-2">
+                    <div class="h-10">
+                        <img class="w-10" src="../assets/logo.png" />
+                    </div>
+                    <div class="hidden lg:flex font-bold items-center">
+                        {{ name_app }}
+                    </div>
+                </div>
+            </HeaderNav>
             <div class="flex items-center gap-4">
                 <DropDownNotification />
                 <DropDownAccount />
@@ -26,6 +36,7 @@
 <script setup>
 import { ref } from "vue";
 import DropDownAccount from "@/components/DropDownAccount.vue";
+import HeaderNav from "@/components/atoms/NavHeaderAt.vue";
 import DropDownNotification from "@/components/DropDownNotification.vue";
 const toggleSide = ref();
 const toggleSideMenu = () => {
