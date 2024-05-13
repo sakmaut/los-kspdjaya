@@ -1,11 +1,11 @@
 <template>
     <div
-        class="relative flex flex-col overflow-clip justify-between items-center bg-sf/30 dark:bg-sf-drk-200 border-plate border-2 w-full aspect-square rounded-xl">
+        class="relative flex flex-col overflow-clip justify-between items-center bg-sf/30 dark:bg-sf-drk-200 border-plate border border-pr border-dashed w-full aspect-square rounded-xl">
         <div class="flex w-full h-full">
             <div v-if="upload.preview" class="w-full h-full">
                 <img :src="upload.preview" class="w-full" />
             </div>
-            <div v-else class="bg-sfcl dark:bg-sf-drk-200 w-full h-full flex flex-col items-center justify-center">
+            <div v-else class="w-full h-full flex flex-col items-center justify-center">
                 <svg class="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path fill-rule="evenodd"
                         d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z"
@@ -13,7 +13,7 @@
                 </svg>
                 <label :for="label"
                     class="relative cursor-pointer rounded-md bg-pr font-bold dark:bg-pr-500 text-sf p-1 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary">
-                    <span>Upload {{ label }}</span>
+                    <span>{{ label }}</span>
                     <input :id="label" type="file" class="sr-only" accept="image/*" @change="previewImage"
                         @input="$emit('update:modelValue', $event.target.files[0])">
                 </label>

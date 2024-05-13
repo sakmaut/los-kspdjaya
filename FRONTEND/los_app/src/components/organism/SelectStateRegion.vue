@@ -1,7 +1,7 @@
 <template>
     <div class="relative">
         <select id="regional" v-model="sel_provinsi"
-            class="peer w-full border bg-white rounded-md placeholder:text-transparent p-3 focus:outline-none"
+            class="peer w-full border bg-white text-sm rounded-md placeholder:text-transparent p-[7px] focus:outline-none"
             @change="provinsiChanged($event)">
             <option disabled value="pilih">Pilih Provinsi</option>
             <option v-for=" provinsi in col_provinsi" :key="provinsi.id" :value="provinsi">
@@ -12,7 +12,7 @@
     </div>
     <div class="relative">
         <select id="kota" v-model="sel_kota"
-            class="peer w-full border bg-white rounded-md placeholder:text-transparent p-3 focus:outline-none"
+            class="peer w-full border bg-white text-sm rounded-md placeholder:text-transparent p-[7px] focus:outline-none"
             @change="kotaChanged($event)">
             <option disabled value="pilih">Pilih Kota</option>
             <option v-for="kota in col_kota" :key="kota.id" :value="kota">
@@ -24,7 +24,7 @@
     </div>
     <div class="relative">
         <select id="kecamatan" v-model="sel_kec"
-            class="peer w-full border bg-white rounded-md placeholder:text-transparent p-3 focus:outline-none"
+            class="peer w-full border bg-white text-sm rounded-md placeholder:text-transparent p-[7px] focus:outline-none"
             @change="kecChanged($event)">
             <option disabled value="pilih">Pilih Kecamatan</option>
             <option v-for="kec in col_kec" :key="kec.id" :value="kec">
@@ -36,7 +36,7 @@
     <div class="relative">
 
         <select id="desa" v-model="sel_desa"
-            class="peer w-full border bg-white rounded-md placeholder:text-transparent p-3 focus:outline-none">
+            class="peer w-full border bg-white text-sm rounded-md placeholder:text-transparent p-[7px] focus:outline-none">
             <option disabled value="pilih">Pilih Desa</option>
             <option v-for="desa in col_desa" :key="desa.id" :value="desa">
                 {{ desa.name }}</option>

@@ -1,8 +1,10 @@
 <template>
-    <div class="flex mt-10 w-full justify-center" v-if="suspense">
-        <LoaderComponent />
+    <div class="px-4">
+        <div class="flex mt-10 w-full justify-center" v-if="suspense">
+            <LoaderComponent />
+        </div>
+        <table-view :heading :body-data="tableData" :action="tableAction" nav-head v-else />
     </div>
-    <table-view :heading :body-data="tableData" :action="tableAction" nav-head v-else />
 </template>
 <script setup>
 import { ref } from "vue";
@@ -18,6 +20,7 @@ const tableAction = {
     'update': true,
     'delete': true,
     'detail': true,
+    'download': true,
 }
 const suspense = ref(true);
 const token = localStorage.getItem("token");

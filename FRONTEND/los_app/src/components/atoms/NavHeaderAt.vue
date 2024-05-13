@@ -7,6 +7,7 @@
             </div>
             <span class="hidden md:flex md:text-2xl md:font-semibold capitalize">{{ title }}</span>
         </div>
+
         <slot />
         <div>
             <slot name="action" />

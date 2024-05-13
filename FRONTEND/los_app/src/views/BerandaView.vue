@@ -1,42 +1,36 @@
 <template>
     <ScaffMol class="w-full h-svh">
-        <div class="w-1/6 md:flex bg-white dark:bg-sf-drk-100 p-0 " ref="el" v-if="sidebarVisible">
-            <div class="bg-er w-full">
+        <div class="w-1/5 md:flex bg-white dark:bg-sf-drk-100 p-0" ref="el" v-if="sidebarVisible">
+            <div class="w-full">
                 <SideBar />
             </div>
         </div>
-        <div class="w-full dark:bg-sf-drk-100">
-            <div class="w-full h-full overflow-clip overflow-y-auto">
-                <div class="flex flex-col ">
-                    <div class="flex flex-col h-screen md:h-full justify-between md:justify-start z-10">
-                        <div>
-                            <div class="sticky z-50 px-4 top-0 py-4 bg-sc-50">
-                                <NavHeaderAt :title="$route.name">
-                                    <div class="flex md:hidden p-2 items-center justify-center gap-2">
-                                        <div class="h-10">
-                                            <img class="w-10" src="../assets/logo.png" />
-                                        </div>
-                                        <div class="hidden lg:flex font-bold items-center">
-                                            {{ name_app }}
-                                        </div>
-                                    </div>
-                                    <template #action>
-                                        <div class="flex gap-2">
-                                            <BaseButton def>
-                                                <v-icon name="hi-bell" />
-                                            </BaseButton>
-                                        </div>
-                                    </template>
-                                </NavHeaderAt>
+        <div class="w-full h-full overflow-auto p-0 bg-sc-50">
+            <div class="flex flex-col h-screen md:h-full justify-between md:justify-start z-10">
+                <div class="sticky z-50 px-4 top-0 py-4 text-sc">
+                    <NavHeaderAt :title="$route.name">
+                        <div class="flex md:hidden p-2 items-center justify-center gap-2">
+                            <div class="h-10">
+                                <img class="w-10" src="../assets/logo.png" />
                             </div>
-                            <router-view v-slot="{ Component }">
-                                <Transition name="slide-fade">
-                                    <component :is="Component" />
-                                </Transition>
-                            </router-view>
+                            <div class="hidden lg:flex font-bold items-center">
+                                {{ name_app }}
+                            </div>
                         </div>
-                    </div>
+                        <template #action>
+                            <div class="flex gap-2">
+                                <BaseButton def>
+                                    <v-icon name="hi-bell" />
+                                </BaseButton>
+                            </div>
+                        </template>
+                    </NavHeaderAt>
                 </div>
+                <router-view v-slot="{ Component }">
+                    <Transition name="slide-fade">
+                        <component :is="Component" />
+                    </Transition>
+                </router-view>
             </div>
         </div>
     </ScaffMol>

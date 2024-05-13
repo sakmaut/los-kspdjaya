@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-between items-center mb-4 bg-white">
+    <div class="flex justify-between items-center p-4 ">
         <div class="flex items-center">
             <div @click="backPage" v-if="leading"
                 class="flex text-pr dark:text-pr-500 hover:bg-sfcls dark:hover:bg-sf-drk-200 rounded-full aspect-square p-1 cursor-pointer">

@@ -2,7 +2,7 @@
     <div class="relative">
         <select :value="modelValue" :id="label" @change="$emit('update:modelValue', $event.target.value)"
             v-bind="$attrs"
-            class="peer w-full text-base border bg-white rounded-md placeholder:text-transparent p-[10px] focus:outline-none"
+            class="peer w-full border bg-white text-sm rounded-md placeholder:text-transparent p-[7px] focus:outline-none"
             :class="error && 'border-pink-500 focus:ring-2 focus:ring-pink-500'">
             <option disabled value="pilih">Pilih {{ label }}</option>
             <option v-for="option in options" :key="option" :value="option">{{ option.toUpperCase()
