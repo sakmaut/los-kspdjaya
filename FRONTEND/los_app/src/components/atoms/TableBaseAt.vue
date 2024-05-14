@@ -35,7 +35,7 @@
                         <v-icon name="hi-printer" />
                         <span class="hidden md:flex">cetak </span>
                     </BaseButtonAt>
-                    <RouterLink :to="`add-${$route.name}`">
+                    <RouterLink :to="`new-${$route.name}`">
                         <BaseButtonAt v-if="action.add" class="bg-pr !text-white hover:bg-pr-800">
                             <v-icon name="hi-plus-sm" />
                             <span class="hidden md:flex">tambah</span>
@@ -139,16 +139,18 @@
     </div>
 </template>
 <script setup>
-import LongString from "@/components/atoms/LongString.vue";
-import _ from "lodash";
-import { useToast } from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-sugar.css';
-import { read, utils, writeFileXLSX } from 'xlsx';
 import BaseButtonAt from "@/components/atoms/BaseButtonAt.vue";
 import HeadContainer from "@/components/atoms/HeadContainerAt.vue";
-import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-import { computed, ref, onMounted } from "vue";
+import LongString from "@/components/atoms/LongString.vue";
+import router from "@/router";
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
+import { useFocus, useMagicKeys, whenever } from '@vueuse/core';
 import { jsPDF } from "jspdf";
+import _ from "lodash";
+import { computed, onMounted, ref } from "vue";
+import { useToast } from 'vue-toast-notification';
+import 'vue-toast-notification/dist/theme-sugar.css';
+import { utils, writeFileXLSX } from 'xlsx';
 const leading = ref();
 const icon = computed(() => {
     let text = `${leading.value}`;
@@ -162,8 +164,6 @@ const props = defineProps({
     action: Object,
     navHead: Boolean,
 });
-import { useFocus, useMagicKeys, whenever } from '@vueuse/core'
-import router from "@/router";
 const findBox = ref(false);
 const searchInput = ref();
 const find = (() => {

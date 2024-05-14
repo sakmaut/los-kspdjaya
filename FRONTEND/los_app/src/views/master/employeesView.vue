@@ -27,5 +27,5 @@ const tableAction = {
 const suspense = ref(true);
 const token = localStorage.getItem("token");
 useAPIget("karyawan", token).then(([res]) => { tableData.value = res; suspense.value = !suspense.value; });
-const heading = [{ NIK: "NIK", NAMA: "Nama", GENDER: "Jenis Kelamin", EMAIL: "Email", HP: "No Hp", STATUS_MST: "status", }];
+const heading = [{ nik: "NIK", nama: "Nama", jenis_kelamin: "Jenis Kelamin", email: "Email", no_hp: "No Hp", status: "status", }];
 </script>

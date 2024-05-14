@@ -3,6 +3,7 @@
         <div class="flex mt-10 w-full justify-center" v-if="suspense">
             <LoaderComponent />
         </div>
+
         <table-view :heading :body-data="tableData" :action="tableAction" nav-head v-else />
     </div>
 </template>
@@ -25,5 +26,5 @@ const tableAction = {
 const suspense = ref(true);
 const token = localStorage.getItem("token");
 useAPIget("cabang", token).then(([res]) => { tableData.value = res; suspense.value = !suspense.value; });
-const heading = [{ CODE: "Kode", NAME: "Nama", ADDRESS: "Alamat", LOCATION: "Lokasi", PHONE_1: "No Telp 1", PHONE_2: "No Telp 2", PHONE_3: "No Telp 3", DESCR: "Deskripsi", STATUS: "status", }];
+const heading = [{ kode: "Kode", nama: "Nama", alamat: "Alamat", lokasi: "Lokasi", telp_1: "No Telp 1", telp_2: "No Telp 2", telp_3: "No Telp 3", keterangan: "Deskripsi", status: "status", }];
 </script>

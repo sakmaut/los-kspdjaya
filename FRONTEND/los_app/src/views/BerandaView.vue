@@ -19,9 +19,18 @@
                         </div>
                         <template #action>
                             <div class="flex gap-2">
-                                <BaseButton def>
-                                    <v-icon name="hi-bell" />
-                                </BaseButton>
+                                <div class="flex gap-2">
+                                    <BaseButton def>
+                                        <v-icon name="hi-bell" />
+                                    </BaseButton>
+                                </div>
+                                <div class="flex gap-2">
+                                    <BaseButton def @click="logout">
+                                        <div class="flex gap-1">
+                                            <v-icon name="hi-logout" class="text-er" /> logout
+                                        </div>
+                                    </BaseButton>
+                                </div>
                             </div>
                         </template>
                     </NavHeaderAt>
@@ -46,6 +55,9 @@ const el = ref(null);
 import { useMediaQuery } from "@vueuse/core";
 import NavHeaderAt from "@/components/atoms/NavHeaderAt.vue";
 import BaseButton from "@/components/atoms/BaseButtonAt.vue";
+import { useAPIget } from "@/support/api.js";
+
+
 const sidebarVisible = ref(useMediaQuery('(min-width:1024px)'));
 const rect = reactive(useElementBounding(el));
 if (!localStorage.getItem("token")) {
@@ -54,7 +66,13 @@ if (!localStorage.getItem("token")) {
 const showHideLeft = () => {
     sidebarVisible.value = !sidebarVisible.value;
 }
+const token = localStorage.getItem("token");
 
+const logout = () => {
+    useAPIget('auth/logout', token);
+    localStorage.removeItem("token");
+    router.push("/login");
+}
 </script>
 <style>
 .slide-fade-enter-active {

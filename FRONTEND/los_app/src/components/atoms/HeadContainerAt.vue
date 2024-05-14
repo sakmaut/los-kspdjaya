@@ -6,7 +6,7 @@
                 <v-icon name="ri-arrow-left-line" scale="1.5"></v-icon>
             </div>
             <div class="flex flex-col">
-                <span class="md:text-2xl" :class="leading && 'ps-2'">{{ title }}</span>
+                <span class="md:text-2xl text-sc" :class="leading && 'ps-2'">{{ title }}</span>
                 <span class="md:text-sm text-sc-300 " :class="leading && 'ps-2'">{{ subtitle }}</span>
             </div>
         </div>

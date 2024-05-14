@@ -1,27 +1,27 @@
 <script setup>
-import { useStepper, useGeolocation, useOnline, useMediaQuery } from "@vueuse/core";
-import { onMounted, reactive, ref, computed, watch } from 'vue'
-import BaseInputAt from '../atoms/BaseInputAt.vue';
-import InputFormAt from '../atoms/InputFormAt.vue';
-import OverlayAt from "../atoms/OverlayAt.vue";
-import BaseButtonAt from "../atoms/BaseButtonAt.vue";
 import BaseInputSingleImageAt from '@/components/atoms/BaseInputSingleImageAt.vue';
-import BaseInputMultiImageAt from '@/components/atoms/BaseInputMultiImageAt.vue';
-import HeadContainer from '@/components/atoms/HeadContainerAt.vue';
-import BaseSelectBoxAt from "../atoms/BaseSelectBoxAt.vue";
-import SelectState from "../organism/SelectStateRegion.vue";
-import useUuid from "@/support/uuid";
+import router from "@/router";
+import { useAPIget } from "@/support/api";
 import { useDate } from "@/support/date";
 import useForm from "@/support/form";
+import useUuid from "@/support/uuid";
+import { useVuelidate } from '@vuelidate/core';
+import { helpers, minLength, required } from '@vuelidate/validators';
+import { useMediaQuery, useOnline, useStepper } from "@vueuse/core";
 import axios from "axios";
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { toast } from 'vue3-toastify';
-import { useAPIget } from "@/support/api";
+import BaseButtonAt from "../atoms/BaseButtonAt.vue";
+import BaseInputAt from '../atoms/BaseInputAt.vue';
+import BaseSelectBoxAt from "../atoms/BaseSelectBoxAt.vue";
+import CardAt from "../atoms/CardAt.vue";
+import OverlayAt from "../atoms/OverlayAt.vue";
+import SelectState from "../organism/SelectStateRegion.vue";
 const online = useOnline();
 const isLargeScreen = useMediaQuery('(min-width:1024px)');
 const visitDate = useDate();
 const uuid = useUuid();
 const { numberOnly } = useForm();
-import router from "@/router";
 
 const numberInput = {
     numeral: true,
@@ -134,11 +134,6 @@ const form = reactive({
     jaminan: [],
     penjamin: [],
 });
-import { useVuelidate } from '@vuelidate/core'
-import { required, helpers, minLength } from '@vuelidate/validators'
-import ListBoxAt from "../atoms/ListBoxAt.vue";
-import LoaderComponent from "../atoms/LoaderComponent.vue";
-import CardAt from "../atoms/CardAt.vue";
 const rulesCredit = computed(() => {
     const requiredField = helpers.withMessage(`harus diisi !`, required);
     function minLengthField(minVal) {
@@ -328,9 +323,9 @@ watch(form.penjamin, (n) => {
                 <div v-for="(step, id, i) in stepper.steps.value" :key="id" class="flex gap-2 cursor-pointer"
                     @click="stepper.goTo(id)" :class="stepper.isBefore(id) ? 'text-sf-drk-600' : 'text-primary'">
                     <button class="flex w-full justify-start">
-                        <div class="flex border p-4 rounded-xl gap-2 md:flex-row">
+                        <div class="flex border p-4 rounded-xl bg-white gap-2 md:flex-row">
                             <div class="w-11 rounded-full flex items-center justify-center p-2 aspect-square"
-                                :class="stepper.isBefore(id) ? 'bg-accent/20 text-sc-300' : 'bg-accent dark:bg-pr-500'">
+                                :class="stepper.isBefore(id) ? 'bg-pr-700/20 text-white' : 'bg-pr text-white dark:bg-pr-500'">
                                 <v-icon :name="step.icon"></v-icon>
                             </div>
                             <div class="text-left">
@@ -437,25 +432,25 @@ watch(form.penjamin, (n) => {
                                     @reset-image="slikAttach.file_ktp = null" />
                             </div>
                         </div>
-                        <div class="bg-white p-4 border rounded-md">
+                        <div class="grid bg-white p-4 border rounded-md gap-4">
                             <div class="col-span-3 pb-4">Detail Jaminan</div>
                             <div class="grid gap-4 grid-cols-1">
                                 <BaseSelectBoxAt label="Tipe Kendaraan" :options="tujuan"
                                     v-model="form.tujuan_kredit" />
-                                <div class="flex">
+                                <div class="flex gap-4">
                                     <BaseInputAt label="merk" />
                                     <BaseInputAt label="tahun" />
                                     <BaseInputAt label="warna" />
                                 </div>
-                                <div class="flex">
+                                <div class="flex gap-4">
                                     <BaseInputAt label="atas nama" />
                                     <BaseInputAt label="nilai jaminan" />
                                 </div>
-                                <div class="flex">
+                                <div class="flex gap-4">
                                     <BaseInputAt label="NO polisi" />
                                     <BaseInputAt label="NO rangka" />
                                 </div>
-                                <div class="flex">
+                                <div class="flex gap-4">
                                     <BaseInputAt label="NO mesin" />
                                     <BaseInputAt label="NO BPKB" />
                                 </div>

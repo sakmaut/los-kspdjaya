@@ -1,28 +1,28 @@
-import { createRouter, createWebHistory } from "vue-router";
-import LoginPage from "@/views/LoginPage.vue";
-import LandingPage from "@/views/LandingPage.vue";
-import Dashboard from "@/views/DashBoard.vue";
 import TestComp from "@/components/TestComponent.vue";
-import TestView from "@/views/TestView.vue";
-import PageNotFound from "@/views/404PageNotFound.vue";
-import ApplyPage from "@/views/ApplyPage.vue";
 import ApplyCredit from "@/components/organism/ApplyCredit.vue";
-import HomePage from "@/views/HomePage.vue";
-import BerandaView from "@/views/BerandaView.vue";
-import DetailProspectPage from "@/views/DetailProspectPage.vue";
+import PageNotFound from "@/views/404PageNotFound.vue";
 import AccountSettings from "@/views/AccountSettings.vue";
+import ApplyPage from "@/views/ApplyPage.vue";
+import BerandaView from "@/views/BerandaView.vue";
+import Dashboard from "@/views/DashBoard.vue";
+import DetailProspectPage from "@/views/DetailProspectPage.vue";
 import GeneralSettings from "@/views/GeneralSettings.vue";
-import RekeningKoranSPA from "@/views/SPA/RekeningKoranSPA.vue";
-import MutasiRekening from "@/views/SPA/MutasiRekening.vue";
-import MainVisitDisplay from "@/views/task/visit/MainVisitDisplay.vue";
+import HomePage from "@/views/HomePage.vue";
+import LandingPage from "@/views/LandingPage.vue";
+import LoginPage from "@/views/LoginPage.vue";
 import ConfPage from "@/views/SPA/ConfPage.vue";
-import MasterView from "@/views/master/masterView.vue";
-import MenuView from "@/views/master/menuView.vue";
+import MutasiRekening from "@/views/SPA/MutasiRekening.vue";
+import RekeningKoranSPA from "@/views/SPA/RekeningKoranSPA.vue";
+import TestView from "@/views/TestView.vue";
+import AddMenuView from "@/views/master/addMenuView.vue";
 import BranchView from "@/views/master/branchView.vue";
 import EmployeesView from "@/views/master/employeesView.vue";
+import MasterView from "@/views/master/masterView.vue";
+import MenuView from "@/views/master/menuView.vue";
 import SettingsView from "@/views/master/settingsView.vue";
 import UsersView from "@/views/master/usersView.vue";
-import AddMenuView from "@/views/master/addMenuView.vue";
+import MainVisitDisplay from "@/views/task/visit/MainVisitDisplay.vue";
+import { createRouter, createWebHistory } from "vue-router";
 // slice
 import BerandaSlice from "@/components/slice/BerandaSlice.vue";
 
@@ -108,9 +108,19 @@ const routes = [
         component: BranchView,
       },
       {
+        name: "tambah cabang",
+        path: "new-cabang",
+        component: () => import("@/components/organism/addBranch.vue"),
+      },
+      {
         name: "karyawan",
         path: "employees",
         component: EmployeesView,
+      },
+      {
+        name: "tambah karyawan",
+        path: "new-karyawan",
+        component: () => import("@/components/organism/addEmployee.vue"),
       },
       {
         name: "pengaturan",
