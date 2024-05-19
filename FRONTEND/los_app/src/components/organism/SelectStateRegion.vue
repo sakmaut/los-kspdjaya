@@ -35,7 +35,7 @@
     </div>
     <div class="relative">
 
-        <select id="desa" v-model="sel_desa"
+        <select id="desa" v-model="sel_desa" @change="desaChanged($event)"
             class="peer w-full border bg-white text-sm rounded-md placeholder:text-transparent p-[7px] focus:outline-none">
             <option disabled value="pilih">Pilih Desa</option>
             <option v-for="desa in col_desa" :key="desa.id" :value="desa">
@@ -61,11 +61,14 @@ const col_kota = ref();
 const col_kec = ref();
 const col_desa = ref();
 
+const emit = defineEmits(['update:provinsi', 'update:kota', 'update:kecamatan', 'update:desa']);
+
 const provinsiChanged = async () => {
     let idprov = sel_provinsi.value.id;
     try {
         let getKota = await axios.get(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${idprov}.json`);
         col_kota.value = getKota.data;
+        emit('update:provinsi', sel_provinsi.value.name);
     } catch (error) {
         console.log(error);
     }
@@ -75,6 +78,7 @@ const kotaChanged = async () => {
     try {
         let getKec = await axios.get(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${idKota}.json`);
         col_kec.value = getKec.data;
+        emit('update:kota', sel_kota.value.name);
     } catch (error) {
         console.log(error);
     }
@@ -84,9 +88,13 @@ const kecChanged = async () => {
     try {
         let getKec = await axios.get(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${idKec}.json`);
         col_desa.value = getKec.data;
+        emit('update:kecamatan', sel_kec.value.name);
     } catch (error) {
         console.log(error);
     }
+};
+const desaChanged = () => {
+    emit('update:desa', sel_desa.value.name);
 };
 
 const getProvinsi = useOpenAPIget("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json").then(([res]) => { col_provinsi.value = res });
@@ -102,9 +110,17 @@ defineProps({
     options: {
         type: Object,
     },
-    modelValue: {
+    provinsi: {
         type: String,
-        default: "kosong",
+    },
+    kota: {
+        type: String,
+    },
+    kecamatan: {
+        type: String,
+    },
+    desa: {
+        type: String,
     },
     loop: {
         type: [Number, Boolean]

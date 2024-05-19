@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { reactive } from "vue";
 export const useEmployees = defineStore("employees", () => {
   const formData = reactive({
-    nik: "",
     nama: "test",
     blood_type: "A",
     gender: "gk jelas",

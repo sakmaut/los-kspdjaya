@@ -7,7 +7,7 @@
         </div>
         <div class="w-full h-full overflow-auto p-0 bg-sc-50">
             <div class="flex flex-col h-screen md:h-full justify-between md:justify-start z-10">
-                <div class="sticky z-50 px-4 top-0 py-4 text-sc">
+                <div class="sticky z-50 px-4 top-0 py-4 bg-sc-50 text-sc">
                     <NavHeaderAt :title="$route.name">
                         <div class="flex md:hidden p-2 items-center justify-center gap-2">
                             <div class="h-10">
