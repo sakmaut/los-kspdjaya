@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="w-full">
         <head-container :title="`Data ${$route.name} `" :subtitle class="capitalize" v-if="navHead">
             <template #action>
                 <div class="flex gap-2">
@@ -51,20 +51,28 @@
                         <th class="th-class p-2">
                             <input type="checkbox" class="accent-pr" />
                         </th>
-                        <th class="th-class" v-for="item in heading[0]" :key="item">{{ item.toUpperCase() }}
+                        <th class="th-class p-2" v-for="item in heading[0]" :key="item">{{ item.toUpperCase() }}
+                        </th>
+                        <th class="th-class">
+                            <slot name="th" />
                         </th>
                         <th class="th-class" v-if="action"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(item, i) in showData" :key="i" class="row-class">
+                        <td class="hidden">{{ statusData=item.status }}</td>
+                        <td class="hidden">{{ idData=item.id }}</td>
                         <td class="td-class p-2"> <input type="checkbox" class="accent-pr" /></td>
                         <td class="td-class" v-for="itemdata, key, col in heading[0]" :key="itemdata"
                             :class="col == 0 && 'td-lead-class'">
                             <v-icon v-if="key === 'leading'" :name="`${icon}`" :ref="leading = item['leading']" />
                             <long-string :val="item[`${key}`]" long="20" v-else />
                         </td>
-                        <td class="td-class" align="center" v-if="action">
+                        <td class="td-class" @getId="i">
+                            <slot name="td" />
+                        </td>
+                        <td class="td-class" align="center" v-if="actionvisible">
                             <Menu as="div" class="relative inline-block text-left">
                                 <MenuButton>
                                     <BaseButtonAt class="!p-0 !border-0 !text-pr">
@@ -117,7 +125,7 @@
                 <BaseButtonAt class="text-sm hover:bg-sc-100 p-2 rounded-xl cursor-pointer dark:hover:bg-sf-drk-300" def
                     @click="showMore">
                     <v-icon name="ri-arrow-drop-down-line" class="animate-bounce" /> tampilkan lebih banyak {{
-            $route.name }}
+                        $route.name }}
                 </BaseButtonAt>
             </div>
             <div
@@ -161,7 +169,8 @@ const props = defineProps({
     subtitle: String,
     heading: Object,
     bodyData: Object,
-    action: Object,
+    actionvisible: Boolean,
+    action: [Boolean, Object],
     navHead: Boolean,
 });
 const findBox = ref(false);
@@ -177,6 +186,9 @@ whenever(keys.escape, () => {
     search;
 });
 const searchFocus = ref()
+const idData = ref();
+const statusData = ref();
+defineExpose({ idData, statusData });
 const { focused, search } = useFocus(searchFocus, { initialValue: true })
 const bucket = ref([]);
 const rowData = ref(10);
@@ -206,24 +218,25 @@ const $toast = useToast();
 const removeData = (e) => {
     const deleted = ref();
     deletedItem.value = bucket.value[e];
-    console.log(deletedItem.value);
     bucket.value.splice(e, 1);
     const undoRemove = () => {
         deleted.value = 1;
         bucket.value.push(deletedItem.value);
-        $toast.open({
-            message: 'data batal dihapus',
-            type: 'success',
-            duration: 2000,
-        });
     }
+    // const fullRemoved = () => {
+    //     deleted.value = 1;
+    //     $toast.open({
+    //         message: 'data berhasil dihapus',
+    //         type: 'success',
+    //         duration: 2000,
+    //     });
+    // }
 
     $toast.open({
         message: 'data dihapus, klik untuk <b>batal</b>',
         type: 'success',
         duration: 3000,
-        onClick: undoRemove,
-        onDismiss: () => { console.log('toast di hapus'); console.log(deletedItem.value.ID) }
+        onClick: () => { undoRemove(); },
     });
 }
 const testHtml = ref(null);
@@ -255,6 +268,13 @@ function exportFile() {
     utils.book_append_sheet(wb, ws, "Data");
     writeFileXLSX(wb, `export_${name}_${time}.xlsx`);
 }
+const base64 = (s) => btoa(s);
+const detailProspect = (key) => {
+    let urldata = base64(key);
+    let currentRoute = router.currentRoute.value.path;
+    router.replace(`${currentRoute}/${urldata}`);
+};
+defineEmits(['getId']);
 </script>
 <style scoped>
 .text-class {
@@ -262,7 +282,7 @@ function exportFile() {
 }
 
 .th-class {
-    @apply bg-pr first:rounded-l-md last:rounded-r-md text-left dark:text-pr-500 font-semibold text-white
+    @apply bg-pr first:rounded-l-md last:rounded-r-md text-left dark:text-pr-500 font-semibold text-white text-nowrap
 }
 
 .tr-class {

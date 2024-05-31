@@ -6,15 +6,15 @@
             </div>
         </div>
         <div class="w-full h-full overflow-auto p-0 bg-sc-50">
-            <div class="flex flex-col h-screen md:h-full justify-between md:justify-start z-10">
+            <div class="flex flex-col h-screen md:h-full md:justify-start z-10">
                 <div class="sticky z-50 px-4 top-0 py-4 bg-sc-50 text-sc">
                     <NavHeaderAt :title="$route.name">
-                        <div class="flex md:hidden p-2 items-center justify-center gap-2">
+                        <div class="flex w-full md:hidden items-center gap-2">
+                            <div class="flex items-center">
+                                <v-icon name="ri-menu-line" />
+                            </div>
                             <div class="h-10">
                                 <img class="w-10" src="../assets/logo.png" />
-                            </div>
-                            <div class="hidden lg:flex font-bold items-center">
-                                {{ name_app }}
                             </div>
                         </div>
                         <template #action>
@@ -25,7 +25,7 @@
                                     </BaseButton>
                                 </div>
                                 <div class="flex gap-2">
-                                    <BaseButton def @click="logout">
+                                    <BaseButton @click="logout">
                                         <div class="flex gap-1">
                                             <v-icon name="hi-logout" class="text-er" /> logout
                                         </div>

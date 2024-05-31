@@ -28,7 +28,7 @@ const useOpenAPIget = async (url) => {
     console.log(error);
   }
 };
-const useAPIPost = async (route, token, payload) => {
+const useAPIPost = async (route, payload, token) => {
   const config = {
     headers: {
       "Content-type": "application/json",
@@ -37,7 +37,7 @@ const useAPIPost = async (route, token, payload) => {
   };
   const data = [];
   try {
-    await axios.get(`${apibase}/${route}`, payload, config).then((res) => {
+    await axios.post(`${apibase}/${route}`, payload, config).then((res) => {
       data.push(res.data.response);
     });
     return data;

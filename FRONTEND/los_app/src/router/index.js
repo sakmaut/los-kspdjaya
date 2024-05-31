@@ -3,6 +3,10 @@ import ApplyCredit from "@/components/organism/ApplyCredit.vue";
 import PageNotFound from "@/views/404PageNotFound.vue";
 import AccountSettings from "@/views/AccountSettings.vue";
 import ApplyPage from "@/views/ApplyPage.vue";
+import VisitPage from "@/views/VisitPage.vue";
+import VisitAdminPage from "@/views/VisitAdminPage.vue";
+import ApprovalPage from "@/views/ApprovalPage.vue";
+import DetailSurveyPage from "@/views/DetailSurveyPage.vue";
 import BerandaView from "@/views/BerandaView.vue";
 import Dashboard from "@/views/DashBoard.vue";
 import DetailProspectPage from "@/views/DetailProspectPage.vue";
@@ -51,18 +55,43 @@ const routes = [
     component: BerandaView,
     children: [
       {
-        path: "apply-loan",
+        path: "new-survey",
         name: "input kunjungan",
         component: ApplyPage,
       },
       {
-        name: "Form Pengajuan Kredit",
-        path: "apply-credit/:prospectId",
-        component: ApplyCredit,
+        path: "survey",
+        name: "Survey",
+        component: VisitPage,
+      },
+      {
+        path: "survey-admin",
+        name: "Survey Admin",
+        component: VisitAdminPage,
+      },
+      {
+        name: "Detail survey",
+        path: "survey/:surveyId",
+        component: DetailSurveyPage,
+      },
+      {
+        name: "Detail approval survey",
+        path: "approval/:surveyId",
+        component: DetailSurveyPage,
+      },
+      {
+        path: "approval",
+        name: "approval",
+        component: ApprovalPage,
       },
       {
         name: "Form Pengajuan Kredit",
         path: "apply-credit",
+        component: VisitAdminPage,
+      },
+      {
+        name: "Form Kredit",
+        path: "form-credit/:prospect",
         component: ApplyCredit,
       },
       {

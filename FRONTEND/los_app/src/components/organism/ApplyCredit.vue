@@ -1,238 +1,61 @@
 <script setup>
-import { useStepper, useGeolocation, useOnline, useMediaQuery } from "@vueuse/core";
-import { onMounted, reactive, ref, computed, watch } from 'vue'
-import BaseInputAt from '../atoms/BaseInputAt.vue';
-import TextField from '../molecules/TextField.vue';
-import InputFormAt from '../atoms/InputFormAt.vue';
-import OverlayAt from "../atoms/OverlayAt.vue";
-import BaseButtonAt from "../atoms/BaseButtonAt.vue";
-import BaseInputSingleImageAt from '@/components/atoms/BaseInputSingleImageAt.vue';
-import BaseInputMultiImageAt from '@/components/atoms/BaseInputMultiImageAt.vue';
-import HeadContainer from '@/components/atoms/HeadContainerAt.vue';
-import BaseSelectBoxAt from "../atoms/BaseSelectBoxAt.vue";
-import SelectState from "../organism/SelectStateRegion.vue";
-import useUuid from "@/support/uuid";
+import { useAPIPost } from "@/support/api";
 import { useDate } from "@/support/date";
 import useForm from "@/support/form";
-import axios from "axios";
-import { toast } from 'vue3-toastify';
-import { useAPIget } from "@/support/api";
+import useUuid from "@/support/uuid";
+import { useMediaQuery, useOnline, useStepper } from "@vueuse/core";
+import { ref, onMounted, reactive, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import BaseButtonAt from "../atoms/BaseButtonAt.vue";
+import BaseInputAt from '../atoms/BaseInputAt.vue';
+import CardAt from "../atoms/CardAt.vue";
+import OverlayAt from "../atoms/OverlayAt.vue";
+import PreRender from "../atoms/PreRender.vue";
+import SelectStateRegion from "./SelectStateRegion.vue";
 const online = useOnline();
 const isLargeScreen = useMediaQuery('(min-width:1024px)');
 const visitDate = useDate();
 const uuid = useUuid();
 const { numberOnly } = useForm();
-import router from "@/router";
+//init router
+const router = useRouter();
 
+//init route
+const route = useRoute();
 const numberInput = {
     numeral: true,
     prefix: 'Rp ',
     noImmediatePrefix: true
 };
-// const formWarning = ref(false);
-const reqSlik = ref(false);
-const reqLocation = ref(false);
-const accuracyLocation = computed(() => {
-    return location.coords.value.accuracy;
-});
-const locationPermition = ref();
 
-const getCordinate = computed(() => {
-
-    return reqLocation.value ? `${location.coords.value.latitude},${location.coords.value.longitude}` : 'tidak diketahui'
-});
-const slik = computed(() => {
-    return reqSlik.value ? 1 : 0
-});
 const loadingpost = ref(false);
 const messagePost = ref();
 const token = localStorage.getItem("token");
 
-const config = {
-    headers: {
-        "Content-Type": "multipart/form-data",
-        "Authorization": `Bearer ${token}`,
-    },
-};
-let apibase = import.meta.env.VITE_APP_API_BASE;
-const handlePostForm = async () => {
-    try {
-        loadingpost.value = true;
-        await axios.post(`${apibase}/kunjungan`, form, config);
-        const ktpAttch = {
-            image: slikAttach.file_ktp,
-            cr_prospect_id: form.id,
-            type: "KTP"
-        }
-        const kkAttch = {
-            image: slikAttach.file_kk,
-            cr_prospect_id: form.id,
-            type: "KK"
-        }
-        const buknikAttch = {
-            image: slikAttach.file_buknik,
-            cr_prospect_id: form.id,
-            type: "BUKU NIKAH"
-        }
 
-        try {
-            //slik attach
-            await axios.post(`${apibase}/image_upload_prospect`, ktpAttch, config);
-            await axios.post(`${apibase}/image_upload_prospect`, kkAttch, config);
-            await axios.post(`${apibase}/image_upload_prospect`, buknikAttch, config);
-
-        } catch (error) {
-            console.log(error);
-        }
-        // block attachment
-        for (let i = 0; i <= form.attachment.length; i++) {
-            console.log(form.attachment[i]);
-            let attachment = {
-                image: form.attachment[i],
-                cr_prospect_id: form.id,
-                type: 'attachment_' + i + 1,
-            }
-            try {
-                // console.log(attachment);
-                let storeAttachment = await axios.post(`${apibase}/image_upload_prospect`, attachment, config);
-                console.log(storeAttachment);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        toast.success("data berhasil disimpan", {
-            autoClose: 3000,
-            closeButton: false,
-            toastClassName: 'rounded-xl bg-white dark:bg-sf-drk-100',
-            position: toast.POSITION.TOP_RIGHT,
-        });
-        loadingpost.value = false;
-        router.push('/task/visit');
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-const form = reactive({
-    id: uuid,
-    visit_date: visitDate,
-    tujuan_kredit: 'pilih',
-    jenis_produk: '',
-    plafond: '',
-    tenor: 'pilih',
-    nama: '',
-    ktp: '',
-    kk: '',
-    tgl_lahir: '',
-    alamat: '',
-    hp: '',
-    usaha: '',
-    sector: '',
-    coordinate: getCordinate,
-    accurate: accuracyLocation,
-    slik: slik,
-    jaminan: [],
-    penjamin: [],
-});
-import { useVuelidate } from '@vuelidate/core'
-import { required, helpers, minLength } from '@vuelidate/validators'
-import ListBoxAt from "../atoms/ListBoxAt.vue";
-import LoaderComponent from "../atoms/LoaderComponent.vue";
-import CardAt from "../atoms/CardAt.vue";
-import HeadContainerAt from "@/components/atoms/HeadContainerAt.vue";
-const rulesCredit = computed(() => {
-    const requiredField = helpers.withMessage(`harus diisi !`, required);
-    function minLengthField(minVal) {
-        const minField =
-            helpers.withMessage(
-                ({ $params }) => `minimal diisi ${$params.min} digit`,
-                minLength(minVal)
-            );
-        return minField;
-    }
-    return {
-        tujuan_kredit: {
-            requiredField,
-        },
-        plafond: {
-            requiredField,
-            minLength: minLengthField(6),
-        },
-        tenor: {
-            requiredField,
-        },
-        nama: {
-            requiredField
-        },
-        ktp: {
-            requiredField,
-            minLength: minLengthField(16),
-        },
-        kk: {
-            requiredField,
-            minLength: minLengthField(16),
-        },
-        tgl_lahir: {
-            requiredField,
-        },
-        alamat: {
-            requiredField,
-        }, hp: {
-            requiredField,
-            minLength: minLengthField(10),
-        },
-        usaha: {
-            requiredField,
-        },
-        sector: {
-            requiredField,
-        }
-    }
-});
-const listSelected = (selected) => {
-    form.jenis_produk = selected.code
-}
-const v$ = useVuelidate(rulesCredit, form);
-const slikAttach = reactive({
-    file_ktp: null,
-    file_kk: null,
-    file_buknik: null,
-});
-const typeJaminan = ['bpkb', 'sertifikat'];
-const hubungan = ['orang tua', 'pasangan', 'saudara',];
-const isPasangan = ref(true);
-const tujuan = ['konsumsi', 'investasi', 'modal kerja',];
 const stepper = useStepper({
     'pelanggan': {
         title: 'Data pelanggan',
         icon: 'hi-user',
-        isValid: () => form.tujuan_kredit && form.plafond && form.tenor && form.jenis_produk,
     },
     'order': {
         title: 'Data Order',
         icon: 'hi-document-text',
-        isValid: () => form.nama && form.ktp && form.kk && form.tgl_lahir && form.alamat && form.hp,
+
     },
     'tambahan': {
         title: 'Data Tambahan',
         icon: 'hi-document-add',
-        isValid: () => form.usaha && form.sector && form.jaminan && form.location,
+
     },
     'ekstra': {
         title: 'Data Ekstra',
         icon: 'hi-document-add',
-        isValid: () => form.usaha && form.sector && form.jaminan && form.location,
+
     },
 })
 
 async function submit() {
-    // const result = await v$.value.$validate()
-    // if (!result) {
-    //     formWarning.value = true;
-    // } else {
-    //     formWarning.value = false;
-    // }
 
     if (stepper.current.value.isValid())
         stepper.goToNext()
@@ -247,210 +70,239 @@ function allStepsBeforeAreValid(index) {
         .fill(null)
         .some((_, i) => !stepper.at(i)?.isValid())
 }
-const listProduct = ref([]);
-const getProductsActive = useAPIget("credit_type/active", token).then(([res]) => { listProduct.value = res });
+const payload = {
+    "cr_prospect_id": route.params.prospect,
+    "cr_application_id": ""
+}
+const data_pelanggan = ref([]);
+const data_order = ref();
+const data_pelanggan_tambahan = ref();
 
-// const location = useGeolocation();
-function addJaminan(index) {
-    form.jaminan.push(
-        {
-            type: '',
-            collateral_value: '',
-            description: ''
-        },
-    );
-    index
-}
-function addPenjamin(index) {
-    form.penjamin.push(
-        {
-            nama: '',
-            ktp: '',
-            tgl_lahir: '',
-            pekerjaan: '',
-            status: '',
-        },
-    );
-    index
-}
-function addPasangan(index) {
-    form.pasangan.push(
-        {
-            nama: '',
-            ktp: '',
-            tgl_lahir: '',
-            pekerjaan: '',
-            status: '',
-        },
-    );
-    index
-}
 
-function removeJaminan(index) {
-    form.jaminan.splice(index, 1);
-    index
-}
-function removePenjamin(index) {
-    form.penjamin.splice(index, 1);
-    index
-}
-function removePasangan(index) {
-    form.pasangan.splice(index, 1);
-    index
-}
+const struktur_kredit = ref();
+const bank = ref([]);
+const jaminan_kendaraan = ref([]);
+const prospect_approval = ref();
+const attachment = ref([]);
+
 onMounted(() => {
-    getProductsActive;
-    numberInput;
-});
-
-const backPage = () => router.back();
-watch(form.penjamin, (n) => {
-
-    let newPenjamin = n.map((element) => {
-        return element.status;
+    useAPIPost("cr_applications", payload, token).then(([res]) => {
+        data_pelanggan.value = res.data_pelanggan;
+        data_order.value = res.data_order;
+        data_pelanggan_tambahan.value = res.data_pelanggan_tambahan;
+        bank.value = res.bank;
+        jaminan_kendaraan.value = res.jaminan_kendaraan;
+        prospect_approval.value = res.prospect_approval;
+        attachment.value = res.attachment;
+        struktur_kredit.value = res.struktur_kredit;
     })
-    if (newPenjamin.toString() === "pasangan") {
-        isPasangan.value = false;
-    } else {
-        isPasangan.value = true;
+});
+const sum = (num1, num2) => {
+    if (isNaN(num1) || isNaN(num2)) {
+        return undefined;
     }
-})
+    return num1 + num2;
+};
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+const calcCredit = reactive({
+    plafond: 7000000,
+    total_admin: 685000,
+    net_admin: computed(() => parseInt(calcCredit.total_admin)),
+    tenor: 12,
+    bunga_eff: 44.2310,
+    bunga_eff_actual: computed(() => calcCredit.bunga_eff / 100),
+    bunga_margin: computed(() => calcCredit.bunga_flat / 12 * parseInt(calcCredit.tenor) * (parseInt(calcCredit.pokok_pembayaran)) / 100),
+    pokok_margin: computed(() => parseInt(calcCredit.pokok_pembayaran) + parseInt(calcCredit.bunga_margin)),
+    pokok_pembayaran: computed(() => sum(parseInt(calcCredit.plafond), parseInt(calcCredit.total_admin))),
+    angsuran: computed(() => ((calcCredit.pokok_pembayaran + calcCredit.bunga_margin) / calcCredit.tenor)),
+    bunga_flat: computed(() => (((calcCredit.tenor * (calcCredit.bunga_eff_actual / 12)) / (1 - (1 + (calcCredit.bunga_eff_actual / 12)) ** (-calcCredit.tenor))) - 1) * (12 / calcCredit.tenor) * 100),
+});
+const backPage = () => router.back();
+const alamat_tagih = ref({
+    alamat: 'alamat',
+    rt: 'rt',
+    rw: 'rw',
+    provinsi: 'rw',
+    kota: 'rw',
+    kecamatan: 'rw',
+    desa: 'rw',
+    kode_pos: 'rw'
+});
+const copyAddress = () => {
+    alamat_tagih.value.alamat = data_pelanggan.value.alamat;
+    alamat_tagih.value.rt = data_pelanggan.value.rt;
+    alamat_tagih.value.rw = data_pelanggan.value.rw;
+    alamat_tagih.value.provinsi = data_pelanggan.value.provinsi;
+    alamat_tagih.value.kota = data_pelanggan.value.kota;
+    alamat_tagih.value.kecamatan = data_pelanggan.value.kecamatan;
+    alamat_tagih.value.desa = data_pelanggan.value.kelurahan;
+    alamat_tagih.value.kode_pos = data_pelanggan.value.kode_pos;
+};
 </script>
 
 <template>
     <CardAt class="pb-4">
         <template #body>
+            <!-- <PreRender :data="data_pelanggan" label="data_pelanggan" />
+            <PreRender :data="data_order" label="data_order" />
+            <PreRender :data="data_tambahan" label="data_tambahan" />
+            <PreRender :data="data_pelanggan_tambahan" label="data_pelanggan_tambahan" />
+            <PreRender :data="bank" label="bank" /> -->
             <div
-                class="flex px-4 py-4 bg-sc-100 sticky top-16 z-50 md:flex-row dark:bg-sf-drk-300 dark:text-sf justify-start gap-2">
-                <div v-for="(step, id, i) in stepper.steps.value" :key="id" class="flex gap-2 cursor-pointer"
-                    @click="stepper.goTo(id)" :class="stepper.isBefore(id) ? 'text-sc' : 'text-primary'">
-                    <button class="flex w-full justify-start">
-                        <div class="flex  bg-white border p-1 item-center rounded-xl gap-2 md:flex-row">
-                            <div class="rounded-full flex items-center justify-center p-1 aspect-square"
-                                :class="stepper.isBefore(id) ? 'bg-sc-200  text-white' : 'bg-pr text-white'">
-                                <v-icon :name="step.icon"></v-icon>
+                class="flex px-4 py-4 bg-sc-100 sticky top-16 z-50 md:flex-row dark:bg-sf-drk-300 dark:text-sf justify-between gap-2">
+                <div class="flex gap-2">
+                    <div v-for="(step, id, i) in stepper.steps.value" :key="id" class="flex gap-2 cursor-pointer"
+                        @click="stepper.goTo(id)" :class="stepper.isBefore(id) ? 'text-sc' : 'text-primary'">
+                        <button class="flex w-full justify-start">
+                            <div class="flex  bg-white border p-1 item-center rounded-xl gap-2 md:flex-row">
+                                <div class="rounded-full flex items-center justify-center p-1 aspect-square"
+                                    :class="stepper.isBefore(id) ? 'bg-sc-200  text-white' : 'bg-pr text-white'">
+                                    <v-icon :name="step.icon"></v-icon>
+                                </div>
+                                <div class="text-left">
+                                    <div class="font-semibold text-xs md:text-base ">{{ step.title }}</div>
+                                </div>
                             </div>
-                            <div class="text-left">
-                                <div class="font-semibold text-xs md:text-base ">{{ step.title }}</div>
-                            </div>
-                        </div>
-                    </button>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <BaseButtonAt def>
+                        <v-icon name="ri-save-line" />
+                        Simpan
+                    </BaseButtonAt>
+                    <BaseButtonAt def>
+                        <v-icon name="ri-mail-send-line" />
+                        kirim
+                    </BaseButtonAt>
                 </div>
             </div>
             <div class="bg-sc-50 px-4 py-2">
                 <form @submit.prevent="submit">
-                    <div class="mt-4 rounded-xl grid grid-cols-2 gap-4" v-if="stepper.isCurrent('pelanggan')">
+                    <div class="mt-4 rounded-xl grid md:grid-cols-2 gap-4" v-if="stepper.isCurrent('pelanggan')">
                         <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md ">
-                            <BaseInputAt label="pelanggan" />
+                            <BaseInputAt label="pelanggan" v-model="data_pelanggan.nama" />
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="nama panggilan" class="col-span-2" />
-                                <BaseInputAt label="jenis kelamin" />
+                                <BaseInputAt label="nama panggilan" class="col-span-2"
+                                    v-model="data_pelanggan.nama_panggilan" />
+                                <BaseInputAt label="jenis kelamin" v-model="data_pelanggan.jenis_kelamin" />
                             </div>
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="tempat lahir" />
-                                <BaseInputAt label="tanggal lahir" type="date" />
-                                <BaseInputAt label="golongan darah" />
+                                <BaseInputAt label="tempat lahir" v-model="data_pelanggan.tempat_lahir" />
+                                <BaseInputAt label="tanggal lahir" v-model="data_pelanggan.tanggal_lahir" type="date" />
+                                <BaseInputAt label="golongan darah" v-model="data_pelanggan.golongan_darah" />
                             </div>
                             <div class="grid grid-cols-2 gap-x-2">
                                 <BaseInputAt label="status kawin" />
-                                <BaseInputAt label="tanggal kawin" />
+                                <BaseInputAt label="tanggal kawin" type="date" />
                             </div>
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="identitas" />
-                                <BaseInputAt label="NO identitas" class="col-span-2" />
+                                <BaseInputAt label="identitas" v-model="data_pelanggan.identitas" />
+                                <BaseInputAt label="NO identitas" class="col-span-2" v-model="data_pelanggan.no" />
                             </div>
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="No KK" class="col-span-2" />
-                                <BaseInputAt label="warganegara" />
+                                <BaseInputAt label="No KK" class="col-span-2" v-model="data_pelanggan.no_kk" />
+                                <BaseInputAt label="warganegara" v-model="data_pelanggan.warganegara" />
                             </div>
                         </div>
                         <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md ">
                             <div class="grid grid-cols-2 gap-x-2">
-                                <BaseInputAt label="pekerjaan" />
-                                <BaseInputAt label="pekerjaan ID" />
+                                <BaseInputAt label="pekerjaan" v-model="data_pelanggan.perkerjaan" />
+                                <BaseInputAt label="pekerjaan ID" v-model="data_pelanggan.id_pekerjaan" />
                             </div>
-                            <BaseInputAt label="agama" />
-                            <BaseInputAt label="pendidikan" />
-                            <BaseInputAt label="status rumah" />
+                            <BaseInputAt label="agama" v-model="data_pelanggan.agama" />
+                            <BaseInputAt label="pendidikan" v-model="data_pelanggan.pendidikan" />
+                            <BaseInputAt label="status rumah" v-model="data_pelanggan.status_rumah" />
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="telepon rumah" />
-                                <BaseInputAt label="telepon selular" />
-                                <BaseInputAt label="telepon kantor" />
+                                <BaseInputAt label="telepon rumah" v-model="data_pelanggan.telepon_rumah" />
+                                <BaseInputAt label="telepon selular" v-model="data_pelanggan.telepon_selular" />
+                                <BaseInputAt label="telepon kantor" v-model="data_pelanggan.telepon_kantor" />
                             </div>
                             <div class="grid grid-cols-2 gap-x-2">
-                                <BaseInputAt label="ext 1" />
-                                <BaseInputAt label="ext 2" />
+                                <BaseInputAt label="ext 1" v-model="data_pelanggan.ext1" />
+                                <BaseInputAt label="ext 2" v-model="data_pelanggan.ext2" />
                             </div>
                         </div>
                         <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md ">
                             <div>Alamat Identitas</div>
                             <div class="grid grid-cols-4 gap-x-2">
-                                <BaseInputAt label="alamat" class="col-span-2" />
-                                <BaseInputAt label="RT" />
-                                <BaseInputAt label="RW" />
+                                <BaseInputAt label="alamat" class="col-span-2" v-model="data_pelanggan.alamat" />
+                                <BaseInputAt label="RT" v-model="data_pelanggan.rt" />
+                                <BaseInputAt label="RW" v-model="data_pelanggan.rw" />
                             </div>
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="provinsi" />
-                                <BaseInputAt label="KAB / kota" />
-                                <BaseInputAt label="kecamatan" />
+                                <!-- <SelectStateRegion v-model:provinsi="data_pelanggan.provinsi"
+                                    v-model:kota="data_pelanggan.kota"
+                                    v-model:kecamatan="data_pelanggan.kecamatan"
+                                    v-model:desa="data_pelanggan.kelurahan" /> -->
+                                <BaseInputAt label="provinsi" v-model="data_pelanggan.provinsi" />
+                                <BaseInputAt label="KAB / kota" v-model="data_pelanggan.kota" />
+                                <BaseInputAt label="kecamatan" v-model="data_pelanggan.kecamatan" />
                             </div>
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="Kel. / desa" />
-                                <BaseInputAt label="kode POS" />
+                                <BaseInputAt label="Kel. / desa" v-model="data_pelanggan.kelurahan" />
+                                <BaseInputAt label="kode POS" v-model="data_pelanggan.kode_pos" />
                             </div>
                         </div>
                         <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md ">
                             <div class="flex justify-between">Alamat Tagih
-                                <BaseButtonAt def>Salin Alamat identitas</BaseButtonAt>
+                                <BaseButtonAt def @click="copyAddress">
+                                    <v-icon name="ri-file-copy-line" />
+                                    Salin Alamat identitas
+                                </BaseButtonAt>
                             </div>
                             <div class="grid grid-cols-4 gap-x-2">
-                                <BaseInputAt label="alamat" class="col-span-2" />
-                                <BaseInputAt label="RT" />
-                                <BaseInputAt label="RW" />
+                                <BaseInputAt label="alamat" class="col-span-2" v-model="alamat_tagih.alamat" />
+                                <BaseInputAt label="RT" v-model="alamat_tagih.rt" />
+                                <BaseInputAt label="RW" v-model="alamat_tagih.rw" />
                             </div>
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="provinsi" />
-                                <BaseInputAt label="KAB / kota" />
-                                <BaseInputAt label="kecamatan" />
+                                <BaseInputAt label="provinsi" v-model="alamat_tagih.provinsi" />
+                                <BaseInputAt label="KAB / kota" v-model="alamat_tagih.kota" />
+                                <BaseInputAt label="kecamatan" v-model="alamat_tagih.kecamatan" />
                             </div>
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="Kel. / desa" />
-                                <BaseInputAt label="kode POS" />
+                                <BaseInputAt label="Kel. / desa" v-model="alamat_tagih.desa" />
+                                <BaseInputAt label="kode POS" v-model="alamat_tagih.kode_pos" />
                             </div>
                         </div>
                     </div>
                     <!-- data order -->
-                    <div class="mt-4 rounded-xl grid grid-cols-2 gap-4" v-if="stepper.isCurrent('order')">
+                    <div class="mt-4 rounded-xl grid md:grid-cols-2 gap-4" v-if="stepper.isCurrent('order')">
                         <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md ">
-                            <BaseInputAt label="nama ibu" />
+                            <BaseInputAt label="nama ibu" v-model="data_order.nama_ibu" />
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="kategori" class="col-span-2" />
-                                <BaseInputAt label="gelar" />
+                                <BaseInputAt label="kategori" class="col-span-2" v-model="data_order.kategori" />
+                                <BaseInputAt label="gelar" v-model="data_order.gelar" />
                             </div>
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="lama kerja" />
-                                <BaseInputAt label="tanggungan" type="date" />
+                                <BaseInputAt label="lama kerja" v-model="data_order.lama_bekerja" />
+                                <BaseInputAt label="tanggungan" type="number" v-model="data_order.tanggungan" />
                             </div>
-                            <BaseInputAt label="pendapatan" />
-                            <BaseInputAt label="pendapatan pasangan" />
-                            <BaseInputAt label="pendapatan lain-lain" />
-                            <BaseInputAt label="biaya bulanan" />
+                            <BaseInputAt label="pendapatan" type="number" v-model="data_order.pendapatan_pribadi" />
+                            <BaseInputAt label="pendapatan pasangan" type="number"
+                                v-model="data_order.pendaptan_pasangan" />
+                            <BaseInputAt label="pendapatan lain-lain" type="number"
+                                v-model="data_order.pendapatan_lainnya" />
+                            <BaseInputAt label="biaya bulanan" type="number" v-model="data_order.biaya_bulanan" />
                         </div>
                         <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md ">
                             <div class="grid grid-cols-2 gap-x-2">
-                                <BaseInputAt label="tanggal order" />
-                                <BaseInputAt label="satus order" />
+                                <BaseInputAt label="tanggal order" type="date" v-model="data_order.order_tanggal" />
+                                <BaseInputAt label="satus order" type="date" v-model="data_order.order_status" />
                             </div>
-                            <BaseInputAt label="tipe order" />
+                            <BaseInputAt label="tipe order" v-model="data_order.order_tipe" />
                             <BaseInputAt label="pelanggan group" />
-                            <BaseInputAt label="unit bisnis" />
-                            <BaseInputAt label="cust service" />
-                            <BaseInputAt label="reff pelanggan" />
-                            <BaseInputAt label="surveyor" />
-                            <BaseInputAt label="catatan survey" />
+                            <BaseInputAt label="unit bisnis" v-model="data_order.unit_bisnis" />
+                            <BaseInputAt label="cust service" v-model="data_order.cust_service" />
+                            <BaseInputAt label="reff pelanggan" v-model="data_order.reff_pelanggan" />
+                            <BaseInputAt label="surveyor" v-model="data_order.surveyor_id" />
+                            <BaseInputAt label="catatan survey" v-model="data_order.catatan_survey" />
                             <BaseInputAt label="platform" />
-                            <BaseInputAt label="prog marketing" />
-                            <BaseInputAt label="cara bayar" />
+                            <BaseInputAt label="prog marketing" v-model="data_order.program_marketing" />
+                            <BaseInputAt label="cara bayar" v-model="data_order.cara_bayar" />
                         </div>
                         <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md">
                             <div>NPWP</div>
@@ -479,90 +331,92 @@ watch(form.penjamin, (n) => {
                         </div>
                     </div>
                     <!-- tambahan -->
-                    <div class="mt-4 rounded-xl grid grid-cols-2 gap-4" v-if="stepper.isCurrent('tambahan')">
+                    <div class="mt-4 rounded-xl grid md:grid-cols-2 gap-4" v-if="stepper.isCurrent('tambahan')">
                         <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md ">
-                            <BaseInputAt label="nama BI" />
-                            <BaseInputAt label="email" />
-                            <BaseInputAt label="info khusus" />
-                            <BaseInputAt label="usaha lain 1" />
-                            <BaseInputAt label="usaha lain 2" />
-                            <BaseInputAt label="usaha lain 3" />
+                            <BaseInputAt label="nama BI" v-model="data_pelanggan_tambahan.nama_bi" />
+                            <BaseInputAt label="email" v-model="data_pelanggan_tambahan.email" />
+                            <BaseInputAt label="info khusus" v-model="data_pelanggan_tambahan.info_khusus" />
+                            <BaseInputAt label="usaha lain 1" v-model="data_pelanggan_tambahan.usaha_lain_1" />
+                            <BaseInputAt label="usaha lain 2" v-model="data_pelanggan_tambahan.usaha_lain_2" />
+                            <BaseInputAt label="usaha lain 3" v-model="data_pelanggan_tambahan.usaha_lain_3" />
+                            <BaseInputAt label="usaha lain 4" v-model="data_pelanggan_tambahan.usaha_lain_4" />
                         </div>
                         <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md ">
                             <div>Kerabat dalam kondisi darurat</div>
-                            <BaseInputAt label="nama" />
+                            <BaseInputAt label="nama" v-model="data_pelanggan_tambahan.nama_kerabat_darurat" />
                             <div class="grid grid-cols-4 gap-x-2">
-                                <BaseInputAt label="alamat" class="col-span-2" />
-                                <BaseInputAt label="RT" />
-                                <BaseInputAt label="RW" />
+                                <BaseInputAt label="alamat" class="col-span-2"
+                                    v-model="data_pelanggan_tambahan.alamat_kerabat_darurat" />
+                                <BaseInputAt label="RT" v-model="data_pelanggan_tambahan.rt_kerabat_darurat" />
+                                <BaseInputAt label="RW" v-model="data_pelanggan_tambahan.rw_kerabat_darurat" />
                             </div>
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="provinsi" />
-                                <BaseInputAt label="KAB / kota" />
-                                <BaseInputAt label="kecamatan" />
+                                <BaseInputAt label="provinsi"
+                                    v-model="data_pelanggan_tambahan.provinsi_kerabat_darurat" />
+                                <BaseInputAt label="KAB / kota"
+                                    v-model="data_pelanggan_tambahan.kota_kerabat_darurat" />
+                                <BaseInputAt label="kecamatan"
+                                    v-model="data_pelanggan_tambahan.kecamatan_kerabat_darurat" />
                             </div>
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="Kel. / desa" />
-                                <BaseInputAt label="kode POS" />
+                                <BaseInputAt label="Kel. / desa"
+                                    v-model="data_pelanggan_tambahan.kelurahan_kerabat_darurat" />
+                                <BaseInputAt label="kode POS"
+                                    v-model="data_pelanggan_tambahan.kode_pos_kerabat_darurat" />
                             </div>
-                            <BaseInputAt label="telepon rumah" />
-                            <BaseInputAt label="telepon selular" />
+                            <BaseInputAt label="telepon rumah"
+                                v-model="data_pelanggan_tambahan.no_telp_kerabat_darurat" />
+                            <BaseInputAt label="telepon selular"
+                                v-model="data_pelanggan_tambahan.no_hp_kerabat_darurat" />
                         </div>
                         <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md">
                             <div>Alamat Surat</div>
                             <div class="grid grid-cols-4 gap-x-2">
-                                <BaseInputAt label="alamat" class="col-span-2" />
-                                <BaseInputAt label="RT" />
-                                <BaseInputAt label="RW" />
+                                <BaseInputAt label="alamat" class="col-span-2"
+                                    v-model="data_pelanggan_tambahan.surat_alamat" />
+                                <BaseInputAt label="RT" v-model="data_pelanggan_tambahan.surat_rt" />
+                                <BaseInputAt label="RW" v-model="data_pelanggan_tambahan.surat_rw" />
                             </div>
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="provinsi" />
-                                <BaseInputAt label="KAB / kota" />
-                                <BaseInputAt label="kecamatan" />
+                                <BaseInputAt label="provinsi" v-model="data_pelanggan_tambahan.surat_provinsi" />
+                                <BaseInputAt label="KAB / kota" v-model="data_pelanggan_tambahan.surat_kota" />
+                                <BaseInputAt label="kecamatan" v-model="data_pelanggan_tambahan.surat_kecamatan" />
                             </div>
                             <div class="grid grid-cols-3 gap-x-2">
-                                <BaseInputAt label="Kel. / desa" />
-                                <BaseInputAt label="kode POS" />
+                                <BaseInputAt label="Kel. / desa" v-model="data_pelanggan_tambahan.surat_kelurahan" />
+                                <BaseInputAt label="kode POS" v-model="data_pelanggan_tambahan.surat_kode_pos" />
                             </div>
                         </div>
-                        <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md col-span-2">
-                            <div>Informasi Bank</div>
-                            <div class="grid grid-cols-8 gap-2">
-                                <BaseInputAt label="kode bank" />
-                                <BaseInputAt label="nama bank " class="col-span-2" />
-                                <BaseInputAt label="Currency" />
-                                <BaseInputAt label="Nomor Rekening" />
-                                <BaseInputAt label="Nama Rekening" class="col-span-2" />
-                                <BaseInputAt label="Status" />
+                        <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md">
+                            <div>
+                                Informasi Bank
                             </div>
-                            <div class="grid grid-cols-8 gap-2">
+                            <div class="grid grid-cols-9 gap-2">
+
                                 <BaseInputAt label="kode bank" />
                                 <BaseInputAt label="nama bank " class="col-span-2" />
                                 <BaseInputAt label="Currency" />
                                 <BaseInputAt label="Nomor Rekening" />
                                 <BaseInputAt label="Nama Rekening" class="col-span-2" />
                                 <BaseInputAt label="Status" />
-                            </div>
-                            <div class="grid grid-cols-8 gap-2">
-                                <BaseInputAt label="kode bank" />
-                                <BaseInputAt label="nama bank " class="col-span-2" />
-                                <BaseInputAt label="Currency" />
-                                <BaseInputAt label="Nomor Rekening" />
-                                <BaseInputAt label="Nama Rekening" class="col-span-2" />
-                                <BaseInputAt label="Status" />
+                                <BaseButtonAt def class="w-fit">
+                                    <v-icon name="ri-add-fill" />
+                                </BaseButtonAt>
                             </div>
                         </div>
                     </div>
                     <!-- extra -->
-                    <div class="mt-4 rounded-xl grid grid-cols-2 gap-4" v-if="stepper.isCurrent('ekstra')">
+                    <div class="mt-4 rounded-xl grid md:grid-cols-2 gap-4" v-if="stepper.isCurrent('ekstra')">
                         <div class="flex flex-col bg-white p-4 border gap-y-4 rounded-md col-span-2">
-                            <div>Struktur Kredit by Angsuran</div>
+                            <div>Struktur Kredit by Angsuran
+                            </div>
                             <div class="grid grid-cols-2 gap-x-4">
                                 <div class="grid gap-y-4">
-                                    <BaseInputAt label="pokok pembayaran" />
+                                    <BaseInputAt label="pokok pembayaran" disabled
+                                        v-model="calcCredit.pokok_pembayaran" />
                                     <BaseInputAt label="tipe angsuran" />
                                     <BaseInputAt label="advance / arrear" />
-                                    <BaseInputAt label="jumlah angsuran">
+                                    <BaseInputAt label="jumlah angsuran" type="number" v-model="calcCredit.tenor">
                                         <template #trail>
                                             kali
                                         </template>
@@ -572,46 +426,50 @@ watch(form.penjamin, (n) => {
                                             bulan
                                         </template>
                                     </BaseInputAt>
-                                    <BaseInputAt label="angsuran" />
-                                    <BaseInputAt label="total" />
-                                    <BaseInputAt label="cadangan" />
-                                    <BaseInputAt label="biaya broker" />
-                                    <BaseInputAt label="provisi">
+                                    <BaseInputAt label="angsuran" disabled v-model="calcCredit.angsuran" />
+                                    <BaseInputAt label="total admin" v-model="calcCredit.total_admin" />
+                                    <BaseInputAt label="cadangan" disabled />
+                                    <BaseInputAt label="biaya broker" disabled />
+                                    <BaseInputAt label="provisi" disabled v-model="provisi">
                                         <template #trail>
                                             %
                                         </template>
                                     </BaseInputAt>
-                                    <BaseInputAt label="asuransi" />
-                                    <BaseInputAt label="biaya transfer" />
-                                    <BaseInputAt label="bunga / margin eff">
+                                    <BaseInputAt label="asuransi" disabled />
+                                    <BaseInputAt label="biaya transfer" disabled />
+                                    <BaseInputAt label="bunga / margin eff" v-model="calcCredit.bunga_eff">
                                         <template #trail>
                                             %
                                         </template>
                                     </BaseInputAt>
-                                    <BaseInputAt label="bunga / margin flat">
+                                    <BaseInputAt label="bunga / margin flat" v-model="calcCredit.bunga_flat" disabled>
                                         <template #trail>
                                             %
                                         </template>
                                     </BaseInputAt>
                                 </div>
                                 <div class="flex flex-col gap-y-4">
-                                    <BaseInputAt label="bunga / margin" />
-                                    <BaseInputAt label="pokok + margin" />
-                                    <BaseInputAt label="angsuran terakhir" />
-                                    <BaseInputAt label="bunga / margin EFF actual">
+                                    <BaseInputAt label="bunga / margin" disabled v-model="calcCredit.bunga_margin" />
+                                    <BaseInputAt label="pokok + margin" disabled
+                                        v-model="calcCredit.pokok_pembayaran" />
+                                    <BaseInputAt label="angsuran terakhir" disabled v-model="calcCredit.angsuran" />
+                                    <BaseInputAt label="bunga / margin EFF actual" disabled
+                                        v-model="calcCredit.bunga_eff">
                                         <template #trail>
                                             %
                                         </template>
                                     </BaseInputAt>
-                                    <BaseInputAt label="bunga / margin EFF flat">
+                                    <BaseInputAt label="bunga / margin EFF flat" disabled
+                                        v-model="calcCredit.bunga_flat">
                                         <template #trail>
                                             %
                                         </template>
                                     </BaseInputAt>
-                                    <BaseInputAt label="provisi" />
-                                    <BaseInputAt label="nett admin" />
+                                    <BaseInputAt label="provisi" disabled v-model="provisi" />
+                                    <BaseInputAt label="nett admin" disabled v-model="calcCredit.net_admin" />
                                     <div class="h-8"></div>
-                                    <BaseInputAt label="nilai yang diterima" class="text-base" />
+                                    <BaseInputAt label="nilai yang diterima" class="text-base"
+                                        v-model="calcCredit.plafond" />
                                 </div>
                             </div>
                         </div>

@@ -1,7 +1,7 @@
 <template>
     <button
-        class="button-reg flex items-center cursor-pointer p-2 rounded-full text-pr dark:text-pr-500 font-normal text-lg"
-        :class="def ? 'hover:bg-sc-100 hover:text-pr hover:dark:bg-sf-drk-300 bg-white' : ''">
+        class="button-reg flex items-center cursor-pointer p-2 rounded-full gap-2 text-pr dark:text-pr-500 font-bold text-lg"
+        :class="def ? '!bg-pr  hover:bg-sc-100 hover:text-pr hover:dark:bg-sf-drk-300 !text-white' : ''">
         <slot></slot>
     </button>
 </template>

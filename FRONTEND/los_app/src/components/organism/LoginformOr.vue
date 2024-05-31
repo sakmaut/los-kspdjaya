@@ -2,12 +2,15 @@
     <div class="p-2 md:p-10 min-w-full min-h-full flex flex-col justify-center">
         <div>
             <div class="text-pr dark:text-osf-drk">
-                <div class="flex   dark:bg-sf-drk-100">
+                <div class="flex gap-2">
                     <img class="h-16 " src="../../assets/logo.png" alt="logo_company">
+                    <div class="flex font-bold text-black text-2xl items-center">
+                        {{ name_app }}
+                    </div>
                 </div>
-                <p class="text-2xl font-semibold pt-4">Selamat datang kembali!</p>
-                <span class="flex text-xs  text-pr-500 dark:text-pr-300">masukan username dan password anda untuk masuk
-                    kedalam akun</span>
+
+                <p class="text-2xl font-semibold pt-4 py-4">Selamat datang kembali!</p>
+
             </div>
 
             <div class="gap-4 flex flex-col">
@@ -47,11 +50,13 @@
 </template>
 <script setup>
 import { reactive, onMounted, ref } from "vue";
+import { useEnvapp } from "@/stores/envapp.js";
 import axios from "axios";
 import ButtonAt from '../atoms/ButtonAt.vue';
 import InputAt from '../atoms/InputAt.vue';
 import AlertboxAt from "../atoms/AlertboxAt.vue";
 import DarkMode from '@/components/atoms/DarkMode.vue';
+const { name_app, theme_app } = useEnvapp();
 import router from "@/router";
 
 import InputNumber from 'primevue/inputnumber';

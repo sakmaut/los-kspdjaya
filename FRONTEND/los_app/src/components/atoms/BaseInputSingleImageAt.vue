@@ -1,4 +1,7 @@
 <template>
+    <Teleport to="body">
+        <PopLayer :isImage="popdata" @pop="pop" v-show="expand" />
+    </Teleport>
     <div
         class="relative flex flex-col overflow-clip justify-between items-center bg-sf/30 dark:bg-sf-drk-200 border-plate border border-pr border-dashed w-full aspect-square rounded-xl">
         <div class="flex w-full h-full">
@@ -21,24 +24,37 @@
             </div>
         </div>
         <div class="absolute w-full h-fit font-semibold items-center text-reg flex justify-between">
-            <span class="p-2"> {{ label }}</span>
-            <BaseButtonAt v-if="upload.preview"
-                class="bg-plate w-8 hover:bg-red-500 bg-sf-drk/40 m-2 flex items-center justify-center cursor cursor-pointer text-white aspect-square rounded-full "
-                @click="resetImage">
-                <v-icon name="bi-x" scale="1.5" class="text-reg hover:text-white" />
-            </BaseButtonAt>
+            <span class="p-2 text-xs" v-if="upload.preview"> {{ label }}</span>
+            <div v-if="upload.preview" class="flex gap-0">
+                <BaseButtonAt
+                    class="bg-plate/50 w-8 bg-sf-drk/40 hover:bg-red-500 m-2 flex items-center justify-center cursor cursor-pointer text-white aspect-square rounded-full "
+                    @click="expandImage(index)">
+                    <v-icon name="bi-arrows-angle-expand" scale="1" class="text-reg hover:text-white" />
+                </BaseButtonAt>
+                <BaseButtonAt
+                    class="bg-plate w-8 hover:bg-red-500 bg-sf-drk/40 m-2 flex items-center justify-center cursor cursor-pointer text-white aspect-square rounded-full "
+                    @click="resetImage">
+                    <v-icon name="bi-x" scale="1.5" class="text-reg hover:text-white" />
+                </BaseButtonAt>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+import PopLayer from "@/components/atoms/PopLayer.vue";
 defineProps({
     label: String,
     modelValue: {
         type: String,
     },
 });
+const expand = ref(false);
+const popdata = ref(false);
+const pop = () => expand.value = false;
+
+
 const emit = defineEmits(["reset-image"]);
 const previewImage = (evt) => {
     var input = evt.target;
@@ -51,6 +67,10 @@ const previewImage = (evt) => {
         reader.readAsDataURL(input.files[0]);
     }
     console.log(upload);
+}
+const expandImage = (index) => {
+    expand.value = true;
+    popdata.value = upload.preview;
 }
 const resetImage = () => {
     emit("reset-image", upload.preview = null);

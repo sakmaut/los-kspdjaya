@@ -1,5 +1,8 @@
 <template>
     <div class="relative input-wrap w-full p-2 inline-block">
+        <Teleport to="body">
+            <PopLayer :isImage="popdata" @pop="pop" v-show="expand" />
+        </Teleport>
         <label for="cover-photo" class="flex text-reg pb-2 font-medium">{{ label }}</label>
         <div class="rounded-lg border border-dashed border-plate dark:bg-sf-drk-200 dark:border-sf-drk-100">
             <div class="flex justify-center ">
@@ -33,6 +36,11 @@
                                 class="absolute w-full top-0 h-fit font-semibold items-center text-reg flex justify-end">
                                 <BaseButtonAt
                                     class="bg-plate/50 w-8 bg-sf-drk/40 hover:bg-red-500 m-2 flex items-center justify-center cursor cursor-pointer text-white aspect-square rounded-full "
+                                    @click="expandImage(index)">
+                                    <v-icon name="bi-arrows-angle-expand" scale="1" class="text-reg hover:text-white" />
+                                </BaseButtonAt>
+                                <BaseButtonAt
+                                    class="bg-plate/50 w-8 bg-sf-drk/40 hover:bg-red-500 m-2 flex items-center justify-center cursor cursor-pointer text-white aspect-square rounded-full "
                                     @click="cancelImage(index)">
                                     <v-icon name="bi-x" scale="1.5" class="text-reg hover:text-white" />
                                 </BaseButtonAt>
@@ -48,8 +56,8 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
-
+import { reactive, ref } from 'vue';
+import PopLayer from "@/components/atoms/PopLayer.vue";
 // import PreRender from './PreRender.vue';
 defineProps({
     label: String,
@@ -57,6 +65,11 @@ defineProps({
         type: String,
     },
 });
+
+const expand = ref(false);
+const popdata = ref(false);
+
+const pop = () => expand.value = false;
 // const emit = defineEmits(["reset-image"]);
 const previewMultiImage = (evt) => {
     var input = evt.target;
@@ -82,6 +95,10 @@ const cancelImage = (index) => {
 // const resetImage = () => {
 //     emit("reset-image", upload.preview_list = []);
 // }
+const expandImage = (index) => {
+    expand.value = true;
+    popdata.value = upload.preview_list[index];
+}
 const upload = reactive({
     preview_list: [],
     image_list: [],
