@@ -24,7 +24,6 @@
     "vue-cleave-component": "^3.0.2",
     "vue-drawing-canvas": "^1.0.14",
     "vue-json-excel3": "^1.0.19",
-    "vue-konva": "^3.0.2",
     "vue-router": "^4.3.0",
     "vue-toast-notification": "^3.1.2",
     "vue3-toastify": "^0.2.1",

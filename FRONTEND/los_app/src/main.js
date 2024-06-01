@@ -4,7 +4,6 @@ import Cleave from "vue-cleave-component";
 import App from "./App.vue";
 import router from "./router";
 import JsonExcel from "vue-json-excel3";
-import VueKonva from "vue-konva";
 
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import * as BIcons from "oh-vue-icons/icons/bi";
@@ -28,7 +27,6 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router);
 app.use(Cleave);
-app.use(VueKonva);
 app.use(ToastPlugin);
 app.component("downloadExcel", JsonExcel);
 app.use(PrimeVue, {
