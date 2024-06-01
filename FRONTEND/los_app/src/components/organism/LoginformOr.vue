@@ -49,17 +49,15 @@
     </div>
 </template>
 <script setup>
-import { reactive, onMounted, ref } from "vue";
+import router from "@/router";
 import { useEnvapp } from "@/stores/envapp.js";
 import axios from "axios";
+import { onMounted, reactive, ref } from "vue";
+import AlertboxAt from "../atoms/AlertboxAt.vue";
 import ButtonAt from '../atoms/ButtonAt.vue';
 import InputAt from '../atoms/InputAt.vue';
-import AlertboxAt from "../atoms/AlertboxAt.vue";
-import DarkMode from '@/components/atoms/DarkMode.vue';
 const { name_app, theme_app } = useEnvapp();
-import router from "@/router";
 
-import InputNumber from 'primevue/inputnumber';
 
 const showPass = ref(false);
 const handlePassword = () => {
