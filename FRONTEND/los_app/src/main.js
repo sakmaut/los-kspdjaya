@@ -14,8 +14,6 @@ const Ri = Object.values({ ...RIcons });
 const Hi = Object.values({ ...HIIcons });
 addIcons(...Bi, ...Hi, ...Ri);
 
-import PrimeVue from "primevue/config";
-
 import "@/assets/index.css";
 import Wind from "@/components/wind";
 
@@ -29,9 +27,5 @@ app.use(router);
 app.use(Cleave);
 app.use(ToastPlugin);
 app.component("downloadExcel", JsonExcel);
-app.use(PrimeVue, {
-  unstyled: true,
-  pt: Wind,
-});
 app.component("v-icon", OhVueIcon);
 app.mount("#app");
