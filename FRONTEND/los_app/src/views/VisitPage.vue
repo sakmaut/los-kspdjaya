@@ -5,28 +5,12 @@
         </div>
 
         <table-view :heading :body-data="tableData" :action="tableAction" nav-head v-else actionvisible ref="tableref">
-            <template #th>
-                STATUS
-            </template>
-            <template #td>
-                <div class="justify-start flex w-full">
-                    <BaseBadgeAt class="text-signal-yellow bg-signal-yellowsf" v-if="statusChild.at(0) == 0">menunggu
-                    </BaseBadgeAt>
-                    <BaseBadgeAt class="text-pr bg-pr-50" v-if="statusChild.at(0) == 1">Approved/reject
-                    </BaseBadgeAt>
-                    <BaseBadgeAt class="text-pr bg-pr-50" v-if="statusChild.at(0) == 2">pembuatan
-                        FPK
-                    </BaseBadgeAt>
-                </div>
-            </template>
         </table-view>
     </div>
 </template>
 <script setup>
 import { ref, computed } from "vue";
 const tableref = ref();
-const idChild = computed(() => tableref.value?.idData);
-const statusChild = computed(() => tableref.value?.statusData);
 import { useAPIget } from "@/support/api.js";
 import TableView from "@/components/atoms/TableBaseAt.vue";
 import LoaderComponent from "@/components/atoms/LoaderComponent.vue";
